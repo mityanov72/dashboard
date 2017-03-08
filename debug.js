@@ -1,0 +1,4 @@
+var DEBUG_PROCESS_SYNC_SERVER = false;
+var DEBUG_PROCESS_SYNC_CLIENT = false;
+var DEBUG_DB_CREATE = false;
+var DEBUG_PROCESS = true;

@@ -1,0 +1,111 @@
+﻿<HTML>
+<HEAD>
+
+<meta charset="utf-8">
+<script src="math.js"></script>
+<script src="classes.js"></script>
+<script src="engine_db.js"></script>
+<script src="engine_console.js"></script>
+<script src="engine_web.js"></script>
+<script src="application.js"></script>
+<script src="tables.js"></script>
+<script src="menu.js"></script>
+
+<link href="style.css" rel="stylesheet">
+<link href="tables.css" rel="stylesheet">
+<link href="popup.css" rel="stylesheet">
+
+<script>
+window.onload = function() {
+	createMenu();
+	
+	fillEquipmentTable();
+}
+
+function tableEquipmentClick(sender) {
+	for(let i=0; i < sender.childNodes.length; i++) {
+		let cell_current = sender.childNodes[i];
+		if(cell_current.getAttribute('data-name') == 'GUID') {
+			localStorage['param_customer_GUID'] = cell_current.innerText;
+			window.location = 'equipment.html';
+		}
+	}
+}
+
+function addEquipment() {
+	let equipment_cat = document.getElementById('equipment_cat');
+	let equipment_title = document.getElementById('equipment_title');
+	let equipment_model = document.getElementById('equipment_model');
+	let equipment_manufacturer = document.getElementById('equipment_manufacturer');
+	if( equipment_cat.selectedIndex != -1)
+	{
+		equipment_cat = equipment_cat.options[equipment_cat.selectedIndex].value;
+	} else {
+		equipment_title.value = '';
+		equipment_model.value = '';
+		equipment_manufacturer.value = '';
+		return -1;
+	}
+	EngineDB.addEquipment(equipment_cat, equipment_title.value, equipment_model.value, equipment_manufacturer.value);
+	equipment_title.value = '';
+	equipment_model.value = '';
+	equipment_manufacturer.value = '';
+	closePopup();
+}
+
+function fillEquipmentCategory() {
+	let equipment_cat = document.getElementById('equipment_cat');
+	fillSelect(equipment_cat, HTML_TABLE_EQUIPMENT_CAT, 'SELECT GUID, title AS category_title FROM equipment_category', [], 'SELECT COUNT(1) FROM equipment_category', []);
+}
+
+function fillEquipmentTable() {
+	var div_table = document.getElementById('div_equipment_list');
+	var input_search = document.getElementById('input_search');
+	input_search.onkeypress = function(event) {
+		if(event.keyCode == 13) {
+			fillEquipmentTable();
+		}
+	}
+	input_search = '%'+input_search.value+'%';
+	div_table.tBodies[0].innerHTML = '';
+	fillTable(div_table, HTML_TABLE_EQUIPMENT, 'SELECT GUID, title || "</br>" || model AS title_model, manufacturer FROM equipment WHERE title LIKE ? OR model LIKE ?', [input_search, input_search], 'SELECT COUNT(1) FROM equipment WHERE title LIKE ? OR model LIKE ?', [input_search, input_search]);
+	fillEquipmentCategory();
+}
+
+</script>
+</HEAD>
+<BODY>
+<div class='top_menu' id='top_menu'></div>
+
+<div class='visual_table'>
+	<a href=# onclick='showPopup()'>add equipment</a>
+	<div class='div_search'>
+	<table  class='edit_table'><tr><td><input type='text' id='input_search'></td>		<td><a href=# onclick='fillEquipmentTable()' class='single_button'>&#128269</a></td></tr></table>
+	</div>
+	<p> введите часть названия в поле поиска и нажмите [enter] на клавиатуре или кнопку [&#128269]</p>
+</div>
+<div class='visual_table'>
+	<table class='visual_table' id='div_equipment_list' width='100%' data-function='tableEquipmentClick'>
+		<caption>equipment table</caption>
+		<thead></thead>
+		<tbody></tbody>
+		<tfoot></tfoot>
+	</table>
+</div>
+
+<div class='div_popup' id='div_popup' style='display: none'>
+	<div class='visual_table'>
+	<table class='edit_table'>
+		<tr><td width=100>category</td>		<td><select id='equipment_cat'></select></td></tr>
+		<tr><td>title</td>		<td><input type='text' id='equipment_title'></td></tr>
+		<tr><td>model</td>		<td><input type='text' id='equipment_model'></td></tr>
+		<tr><td>manufacturer</td>		<td><input type='text' id='equipment_manufacturer'></td></tr>
+		<tr><td></td>	<td><a href=# onclick='addEquipment(); return false' class='link_button'>add</a></td></tr>
+		<tr><td></td>	<td><a href=# onclick='closePopup(); return false' class='link_button'>cancel</a></td></tr>
+	</table>
+	</div>
+</div>
+
+<div class='div_footer'></div>
+</BODY>
+</HTML>

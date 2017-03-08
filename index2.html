@@ -1,0 +1,30 @@
+<HTML>
+<HEAD>
+
+<meta charset="utf-8">
+
+<script>
+document.onload = function() { test() }
+
+function test() {
+  var iframe = document.getElementsByTagName('iframe')[0];
+
+  // сработает
+  iframe.onload = function() {
+    alert( "iframe onload" );
+  };
+
+  // не сработает
+  iframe.contentWindow.onload = function() {
+    alert( "contentWindow onload" );
+  };
+
+}
+
+</script>
+
+</HEAD>
+<body>
+	<iframe src="D:\01_Documents\Dropbox\Work\01_WEB_app\frame.html" style="height:100px"></iframe>
+</body>
+</HTML>

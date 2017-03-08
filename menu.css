@@ -1,0 +1,78 @@
+.top_menu {
+	position: fixed;
+	right: 0px;
+	top: 0px;
+	width: 100%;
+	height: 40px;  
+	display: block;
+	z-index: 50; 
+	background: #4E505C;
+	border: 0px solid red;
+	/*opacity: 0.9;*/
+	text-align: center;
+	/*color: #F7F6FF;*/
+	margin-bottom: 30px;
+	box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.3);
+	vertical-align: middle;
+}
+table.menu_button {
+	width: 100%;
+	height: 40px;
+	border: 0px solid red;
+	margin: 0px;
+	padding: 0px;
+	background: #4E505C;
+}
+table.menu_button td, td {
+	margin: 0px;
+	padding: 0px;
+	background: #4E505C;
+	color: #FFFFFF;
+	font-weight: bold;
+}
+
+table.menu_button td {
+	border: 0px solid red;
+	text-align: center;
+	vertical-align: middle;
+	padding: 0px;
+}
+td#page_title {
+	text-align: left;
+	padding-left: 10px;
+}
+
+
+a.menu_button {
+	color: #EA3B00;
+	font-weight: bold;
+	text-decoration: none;
+	user-select: none;
+	width: 20px;
+	height: 20px;
+	padding: 5px;
+	margin: 4px;
+	border: 0px solid red;
+	background: #4E505C;
+}
+
+a.menu_button:link, a.menu_button:visited, a.menu_button:hover, a.menu_button:active {
+    color: #fffaaa;
+    font-family: Calibri, Verdana;
+}
+
+a.menu_button:hover {
+	background: #EA3B00;
+	color: #fff;
+}
+
+table.menu_button td a {
+	color: #fff;
+}
+
+	/*background: #fff;
+	/*
+	
+	
+	outline: none;
+	vertical-align: middle;*/	

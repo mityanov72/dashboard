@@ -1,0 +1,154 @@
+.mainPage {
+	background: inherit;
+	margin: 0px;
+	padding: 0px;
+}
+
+.Page {
+	background: inherit;
+	margin: 0px;
+	padding: 0px;
+}
+
+.Panel {
+	margin: 10px;
+	padding: 10px;
+	background: #fff;
+	border: 1px solid #F4F5F7;
+    border-radius: 4px;
+    box-shadow: 3px 3px 5px 1px rgba(200,200,200,0.3);
+}
+
+.SearchControl {
+	background: inherit;
+	padding-top: 10px;
+}
+._search_table {
+	border: 0px solid red;
+	width: 100%;
+	background: inherit;
+	margin: 0px;
+	padding: 0px;
+}
+._search_table td {
+	border: 0px solid red;
+	width: 100%;
+	background: inherit;
+	margin: 0px;
+	padding: 0px;
+}
+.Input {
+    height: 20px;
+    border: 1px solid #000;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	margin-right: 10px;
+	font-weight: normal;
+}
+a.Button {
+	display: inline-block;
+	color: #EA3B00;
+	text-decoration: none;
+	user-select: none;
+	text-align: center;
+	font-weight: normal;
+	/*width: 18px;
+	height: 20px;*/
+	padding: 0px;
+	padding-left: 5px;
+	padding-right: 5px;
+	margin: 0px;
+}
+
+a.Button:link, a.Button:visited, a.Button:hover, a.Button:active {
+    color: #345;
+    font-family: Calibri, Verdana;
+	border: 1px solid #345;
+}
+
+a.Button:hover {
+	background: #EA3B00;
+	color: #fff;
+	border: 1px solid #345345;
+}
+
+
+.Table  {
+	border-collapse: collapse;
+	border: 0px solid grey;
+	width: 100%;
+	background: #fff;
+}
+.Table th {
+	border: 0px solid grey;
+	font-weight: normal;
+	padding: 10px 15px;
+}
+.Table td {
+	border: 0px solid grey;
+	background: #fff;
+	color: #767777;
+	border-top: 1px solid #e8e8e8;
+	padding: 10px 15px;
+}
+.Table tr {
+	cursor: pointer;
+	background: #fff;
+}
+.Table tr:nth-child(2n) {
+	background: #eee;
+}
+.Table tr:hover td{
+	background: #EEEFF4;
+}
+
+.Table caption {
+	caption-side: top;
+	color: #4CA7D0;
+	text-align: center;
+	padding: 10px 0; 
+	font-size: 10pt;
+	border: 0px solid grey;
+	font-weight: bold;
+	background: #fff;
+}
+
+.Text {
+	text-align: left;
+}
+
+.Grid {
+	width: 100%;
+	border-collapse: collapse;
+	border: 0px;
+	width: 100%;
+	background: #fff;
+	margin: 0px;
+	padding: 0px;
+	
+}
+.Grid th, .Grid tr, .Grid td {
+	background: #fff;
+	border: 1px;
+	margin: 5px;
+	padding: 5px;
+}
+
+.Grid td {
+	color: #000;
+	font-weight: normal;
+}
+
+.Popup {
+	position: fixed;
+	right: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;  
+	display: block;
+	z-index: 100; 
+	background: #F7F8FC;
+	/*opacity: 0.9;*/
+	/*text-align: center;*/
+}

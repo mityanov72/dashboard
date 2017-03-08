@@ -1,0 +1,16 @@
+CREATE TABLE `web`.`users` ( `GUID` VARCHAR(36) NOT NULL , `f_name` VARCHAR(10) NOT NULL , `l_name` VARCHAR(10) NOT NULL , `m_name` VARCHAR(10) NULL , `mail` VARCHAR(20) NULL , `hash` VARCHAR(20) NOT NULL , UNIQUE (`GUID`(36))) ENGINE = InnoDB;
+
+ALTER TABLE `users` ADD `time_update` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `hash`;
+
+
+CREATE TABLE `users` (
+ `is_delete` int(11) NOT NULL DEFAULT '0',
+ `time_update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ `GUID` varchar(36) NOT NULL,
+ `f_name` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+ `l_name` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+ `m_name` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+ `mail` varchar(20) DEFAULT NULL,
+ `hash` varchar(20) NOT NULL,
+ UNIQUE KEY `GUID` (`GUID`)
+) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_unicode_ci;

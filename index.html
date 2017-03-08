@@ -1,0 +1,681 @@
+<HTML>
+<HEAD>
+
+<meta charset="utf-8">
+<script src="debug.js"></script>
+<script src="math.js"></script>
+<script src="classes.js"></script>
+<script src="engine_db.js"></script>
+<script src="engine_console.js"></script>
+<script src="engine_web.js"></script>
+<script src="application.js"></script>
+<script src="tables.js"></script>
+<script src="menu.js"></script>
+<script src="controls.js"></script>
+
+<script src="pages/page_main.js"></script>
+<script src="pages/page_equipment.js"></script>
+<script src="pages/page_customer.js"></script>
+
+<link href="style.css" rel="stylesheet">
+<link href="tables.css" rel="stylesheet">
+<link href="popup.css" rel="stylesheet">
+<link href="menu.css" rel="stylesheet">
+<link href="controls.css" rel="stylesheet">
+
+<script>
+/*
+PAGE: (это где есть меню, поиск, футтер)
+	customer
+	equipment
+	contract
+	
+POPUP: (это где нету меню и футтера, но есть кнопки закрыть и сохранить)
+	
+DIV
+TABLE
+
+*/
+var PAGE;
+var FLOAT_TABLE_BUTTON;
+
+var DIV_FINDER;
+var DIV_MAIN_PAGE;
+var DIV_POPUP_EDIT_EQUIPMENT;
+var DIV_POPUP_EDIT_CUSTOMER;
+var DIV_POPUP_EDIT_CONTRACT;
+var DIV_POPUP_ADD_CUSTOMER_EQUIPMENT;
+var DIV_POPUP_EDIT_CUSTOMER_EQUIPMENT;
+var DIV_PAGE_EQUIPMENT;
+var DIV_PAGE_CUSTOMER;
+var DIV_PAGE_CONTRACT;
+
+var DIV_PAGE_CUSTOMER_DESCRIPTION;
+
+var TABLE_EQUIPMENT;
+var TABLE_CUSTOMER;
+var TABLE_CONTRACT;
+var TABLE_CUSTOMER_EQUIPMENT;
+var TABLE_CUSTOMER_EQUIPMENT_SEARCH;
+
+var SELECT_EQUIPMENT_CATEGORY;
+
+var INPUT_SEARCH;
+var INPUT_SEARCH_EQUIPMENT;
+var INPUT_EQUIPMENT_TITLE;
+var INPUT_EQUIPMENT_MODEL;
+var INPUT_EQUIPMENT_MANUFACTURER;
+var INPUT_CUSTOMER_TITLE;
+var INPUT_CUSTOMER_TOWN;
+var INPUT_CUSTOMER_EDIT_EQUIP_SERIAL;
+var INPUT_CUSTOMER_EDIT_EQUIP_INVENT;
+var INPUT_CUSTOMER_EDIT_EQUIP_DATE;
+var INPUT_CUSTOMER_EDIT_EQUIP_GUID;
+
+var P_SEARCH_DESCRIPTION;
+var P_CUSTOMER_TITLE_DESCR;
+var P_CUSTOMER_TOWN_DESCR;
+var P_CUSTOMER_EDIT_EQUIP_TITLE;
+var P_CONTRACT_CUSTOMER_TITLE;
+
+var BUTTON_FINDER_ADD;
+
+var VAR_CUSTOMER_GUID;
+var VAR_EQUIPMENT_GUID;
+var VAR_CUSTOMER_EQUIPMENT_GUID;
+var VAR_CONTRACT_GUID;
+
+var HISTORY = [];
+var CURRENT_PAGE = undefined;
+
+var PAGE_MAIN;
+var MENU;
+
+window.onload = function() {
+	FLOAT_TABLE_BUTTON				= document.getElementById('float_table_button');
+	PAGE							= document.getElementById('mainPage');
+	MENU							= document.getElementById('top_menu');
+	
+	DIV_FINDER						= document.getElementById('div_finder');
+	DIV_MAIN_PAGE					= document.getElementById('div_main_page');
+	DIV_POPUP_EDIT_EQUIPMENT		= document.getElementById('div_popup_edit_equipment');
+	DIV_POPUP_EDIT_CUSTOMER			= document.getElementById('div_popup_edit_customer');
+	DIV_POPUP_EDIT_CONTRACT			= document.getElementById('div_popup_edit_contract');
+	DIV_POPUP_ADD_CUSTOMER_EQUIPMENT	= document.getElementById('div_popup_add_customer_equipment');
+	DIV_POPUP_EDIT_CUSTOMER_EQUIPMENT	= document.getElementById('div_popup_edit_customer_equipment');
+	DIV_PAGE_EQUIPMENT				= document.getElementById('div_page_equipment');
+	DIV_PAGE_CUSTOMER				= document.getElementById('div_page_customer');
+	DIV_PAGE_CONTRACT				= document.getElementById('div_page_contract');
+	DIV_PAGE_CUSTOMER_DESCRIPTION	= document.getElementById('div_page_customer_description');
+	TABLE_EQUIPMENT					= document.getElementById('table_equipment');
+	TABLE_CUSTOMER					= document.getElementById('table_customer');
+	TABLE_CONTRACT					= document.getElementById('table_contract');
+	TABLE_CUSTOMER_EQUIPMENT		= document.getElementById('table_customer_equipment');
+	TABLE_CUSTOMER_EQUIPMENT_SEARCH	= document.getElementById('table_customer_equipment_search');
+	SELECT_EQUIPMENT_CATEGORY		= document.getElementById('select_equipment_category');
+	INPUT_SEARCH					= document.getElementById('input_search');
+	INPUT_SEARCH_EQUIPMENT			= document.getElementById('input_search_equipment');
+	INPUT_EQUIPMENT_TITLE			= document.getElementById('input_equipment_title');
+	INPUT_EQUIPMENT_MODEL			= document.getElementById('input_equipment_model');
+	INPUT_EQUIPMENT_MANUFACTURER	= document.getElementById('input_equipment_manufacturer');
+	INPUT_CUSTOMER_TITLE			= document.getElementById('input_customer_title');
+	INPUT_CUSTOMER_TOWN				= document.getElementById('input_customer_town');
+	INPUT_CUSTOMER_EDIT_EQUIP_SERIAL	= document.getElementById('input_customer_edit_equipment_serial');
+	INPUT_CUSTOMER_EDIT_EQUIP_INVENT	= document.getElementById('input_customer_edit_equipment_inven');
+	INPUT_CUSTOMER_EDIT_EQUIP_DATE		= document.getElementById('input_customer_edit_equipment_date');
+	INPUT_CUSTOMER_EDIT_EQUIP_GUID		= document.getElementById('input_customer_edit_equipment_GUID');
+	INPUT_CONTRACT_GUID				= document.getElementById('input_contract_GUID');
+	INPUT_CONTRACT_CUSTOMER_GUID	= document.getElementById('input_contract_customer_GUID');
+	INPUT_CONTRACT_DESCRIPTION		= document.getElementById('input_contract_description');
+	P_SEARCH_DESCRIPTION			= document.getElementById('p_search_description');
+	P_CUSTOMER_TITLE_DESCR			= document.getElementById('customer_title_descr');
+	P_CUSTOMER_TOWN_DESCR			= document.getElementById('customer_town_descr');
+	P_CUSTOMER_EDIT_EQUIP_TITLE		= document.getElementById('p_customer_edit_equipment_title');
+	P_CONTRACT_CUSTOMER_TITLE		= document.getElementById('p_contract_customer_title');
+	BUTTON_FINDER_ADD				= document.getElementById('button_finder_add');
+
+	hideAll();
+	createMenu();
+	//showMainPage();
+	//page_main_show();
+	Application.open('PAGE_MAIN');
+	
+	
+	/*window.PAGE_MAIN = new Page('CTR', PAGE, 'PAGE_MAIN');
+	PAGE_MAIN.add(Panel, 'panelFirst');
+	PAGE_MAIN.controls['panelFirst'].add(SearchControl, 'searchControl');
+	
+	PAGE_MAIN.add(Panel, 'panelSecond');
+	PAGE_MAIN.controls['panelSecond'].add(Table, 'mainTable');
+	PAGE_MAIN.controls['panelSecond'].controls['mainTable'].init(HTML_TABLE_CUSTOMER, 'SELECT GUID, title AS customer_title FROM customer WHERE title LIKE ? OR town LIKE ?', ['%', '%'], 
+			'SELECT COUNT(1) FROM customer WHERE title LIKE ? OR town LIKE ?', ['%', '%'], 'table customer', function() { alert('real') });
+	
+	PAGE_MAIN.add(Panel, 'panelThree');
+	PAGE_MAIN.controls['panelThree'].add(Grid, 'grid');
+	PAGE_MAIN.controls['panelThree'].controls['grid'].addRow('description <br>of content', Input, 'input');
+	var btnOk = PAGE_MAIN.controls['panelThree'].controls['grid'].addRow('', Button, 'btnOk');
+	btnOk.setText('ok');
+	
+	/*
+	var panelFirst = PAGE_MAIN.add(Panel, 'panelFirst');
+	var searchControl = panelFirst.add(SearchControl, 'searchControl');
+	
+	var panelSecond = PAGE_MAIN.add(Panel, 'panelSecond');
+	var mainTable = panelSecond.add(Table, 'mainTable');
+	mainTable.init(HTML_TABLE_CUSTOMER, 'SELECT GUID, title AS customer_title FROM customer WHERE title LIKE ? OR town LIKE ?', ['%', '%'], 
+			'SELECT COUNT(1) FROM customer WHERE title LIKE ? OR town LIKE ?', ['%', '%'], 'table customer', function() { alert('real') });
+
+	mainTable.fill();*/
+
+}
+
+/*
+	fillTable(TABLE_CUSTOMER, HTML_TABLE_CUSTOMER, 'SELECT GUID, title AS customer_title FROM customer WHERE title LIKE ? OR town LIKE ?', [search_text, search_text], 
+			'SELECT COUNT(1) FROM customer WHERE title LIKE ? OR town LIKE ?', [search_text, search_text]);
+*/
+
+
+
+function historyBack() {
+	if(HISTORY.length == 0) {
+		showMainPage();
+	} else { HISTORY.pop()() };
+}
+
+function hideSelect() {
+
+}
+
+function showMainPage() {
+	hideAll();
+	show(DIV_MAIN_PAGE);
+}
+
+function showPageEquipment() {
+	hideAll();
+	fillEquipmentTable();
+	P_SEARCH_DESCRIPTION.innerHTML = 'Введите часть названия в поле поиска и нажмите [enter] на клавиатуре или кнопку [&#128269]';
+	show(DIV_FINDER);
+	show(DIV_PAGE_EQUIPMENT);
+	BUTTON_FINDER_ADD.onclick = function() { showPopupEditEquipment(false) };
+	BUTTON_FINDER_ADD.innerText = 'add equipment';
+}
+
+function showPageCustomer() {
+	hideAll();
+	fillCustomerTable();
+	P_SEARCH_DESCRIPTION.innerHTML = 'Введите часть названия учреждения в поле поиска и нажмите [enter] на клавиатуре или кнопку [&#128269]';
+	show(DIV_FINDER);
+	show(DIV_PAGE_CUSTOMER);
+	BUTTON_FINDER_ADD.onclick = function() {show(DIV_POPUP_EDIT_CUSTOMER); };
+	BUTTON_FINDER_ADD.innerText = 'add customer';
+}
+
+function showPageContract() {
+	hideAll();
+	fillContractTable();
+	P_SEARCH_DESCRIPTION.innerHTML = 'Введите часть названия учреждения в поле поиска и нажмите [enter] на клавиатуре или кнопку [&#128269]';
+	show(DIV_FINDER);
+	show(DIV_PAGE_CONTRACT);
+	BUTTON_FINDER_ADD.onclick = function() {show(DIV_POPUP_EDIT_CONTRACT); };
+	BUTTON_FINDER_ADD.innerText = '';
+}
+
+function showPageCustomerDescription() {
+	hideSelect();
+	let callbackFillCust = function(error_level, arrayResult, param) {
+		if(error_level < 0) { return -1; }
+		P_CUSTOMER_TITLE_DESCR.innerHTML = arrayResult[0].title;
+		P_CUSTOMER_TOWN_DESCR.innerHTML = arrayResult[0].town;
+		VAR_CUSTOMER_GUID = arrayResult[0].GUID;
+	}
+	fillCustomerEquipmentTable(VAR_CUSTOMER_GUID);
+	P_CUSTOMER_TITLE_DESCR.innerHTML = '';
+	P_CUSTOMER_TOWN_DESCR.innerHTML = '';
+	EngineDB.executeSql('SELECT * FROM customer WHERE GUID =?', [VAR_CUSTOMER_GUID], callbackFillCust, [], true);
+	//P_SEARCH_DESCRIPTION.innerHTML = 'Введите часть названия учреждения в поле поиска и нажмите [enter] на клавиатуре или кнопку [&#128269]';
+	//show(DIV_FINDER);
+	show(DIV_PAGE_CUSTOMER_DESCRIPTION);
+	CURRENT_PAGE = showPageCustomerDescription;
+}
+
+function showPopupEditEquipment(is_edit = false) {
+	hideSelect();
+	if(is_edit == false) {
+		VAR_EQUIPMENT_GUID = '';
+	}
+	show(DIV_POPUP_EDIT_EQUIPMENT); 
+	fillEquipmentFields(false);
+}
+
+function showPopupContract(is_edit = false) {
+	hideSelect();
+	if(is_edit == false) {
+		VAR_CONTRACT_GUID = '';
+	}
+}
+
+
+//====================================================================================================================================//
+//	TABLE CLICK
+
+function tableEquipmentClick(sender) {
+	for(let i=0; i < sender.childNodes.length; i++) {
+		let cell_current = sender.childNodes[i];
+		if(cell_current.getAttribute('data-name') == 'GUID') {
+			VAR_EQUIPMENT_GUID = cell_current.innerText;
+			//localStorage['param_customer_GUID'] = cell_current.innerText;
+			show(DIV_POPUP_EDIT_EQUIPMENT);
+			fillEquipmentFields(true);
+		}
+	}
+}
+
+function tableCustomerClick(sender) {
+	for(let i=0; i < sender.childNodes.length; i++) {
+		let cell_current = sender.childNodes[i];
+		if(cell_current.getAttribute('data-name') == 'GUID') {
+			//	открыть окно customer description
+			//
+			hideAll();
+			VAR_CUSTOMER_GUID = cell_current.innerText;
+			showPageCustomerDescription();
+		}
+	}
+}
+function tableCustomerContractClick(sender) {
+	let callbackFillCustomerContractRecord = function(error_level, arrayResult, param) {
+		if(error_level < 0) { return -1; }
+		if(arrayResult.length < 1) { return -1; }
+		P_CONTRACT_CUSTOMER_TITLE.innerHTML = arrayResult[0].customer_title;
+		INPUT_CONTRACT_GUID.value = arrayResult[0].GUID;
+		INPUT_CONTRACT_CUSTOMER_GUID.value = arrayResult[0].customer_GUID;
+		INPUT_CONTRACT_DESCRIPTION.value = arrayResult[0].description;
+	}
+	for(let i=0; i < sender.childNodes.length; i++) {
+		let cell_current = sender.childNodes[i];
+		if(cell_current.getAttribute('data-name') == 'GUID') {
+			VAR_CONTRACT_GUID = cell_current.innerText;
+			show(DIV_POPUP_EDIT_CONTRACT);
+			P_CONTRACT_CUSTOMER_TITLE.innerHTML = '';
+			INPUT_CONTRACT_GUID.value = '';
+			INPUT_CONTRACT_CUSTOMER_GUID.value = '';
+			INPUT_CONTRACT_DESCRIPTION.value = '';
+			EngineDB.executeSql('SELECT *, contract.GUID AS GUID, contract.customer_GUID AS customer_GUID, customer.title AS customer_title '+
+					'FROM contract, customer WHERE contract.customer_GUID=customer.GUID AND customer.GUID = ?', [VAR_CONTRACT_GUID], callbackFillCustomerContractRecord, [], true);
+		}
+	}
+}
+function tableCustomerEquipmentClick(sender) {
+	let callbackFillCustomerEquipmentRecord = function(error_level, arrayResult, param) {
+		if(error_level < 0) { return -1; }
+		if(arrayResult.length < 1) { return -1; }
+		INPUT_CUSTOMER_EDIT_EQUIP_GUID.value = arrayResult[0].GUID;
+		P_CUSTOMER_EDIT_EQUIP_TITLE.innerText = arrayResult[0].title+' '+arrayResult[0].model;
+		INPUT_CUSTOMER_EDIT_EQUIP_SERIAL.value = arrayResult[0].num_serial;
+		INPUT_CUSTOMER_EDIT_EQUIP_INVENT.value = arrayResult[0].num_invent;
+		INPUT_CUSTOMER_EDIT_EQUIP_DATE.value = arrayResult[0].date_create;
+		VAR_EQUIPMENT_GUID = arrayResult[0].equipment_GUID;
+		VAR_CUSTOMER_GUID = arrayResult[0].customer_GUID;
+	}
+	for(let i=0; i < sender.childNodes.length; i++) {
+		let cell_current = sender.childNodes[i];
+		if(cell_current.getAttribute('data-name') == 'GUID') {
+			VAR_CUSTOMER_EQUIPMENT_GUID = cell_current.innerText;
+			//closePopup(DIV_POPUP_ADD_CUSTOMER_EQUIPMENT);
+			show(DIV_POPUP_EDIT_CUSTOMER_EQUIPMENT);
+			P_CUSTOMER_EDIT_EQUIP_TITLE.innerText = '';
+			INPUT_CUSTOMER_EDIT_EQUIP_SERIAL.value = '';
+			INPUT_CUSTOMER_EDIT_EQUIP_INVENT.value = '';
+			INPUT_CUSTOMER_EDIT_EQUIP_DATE.value = '';
+			EngineDB.executeSql('SELECT *, customer_equipment.GUID AS GUID FROM customer_equipment, equipment WHERE customer_equipment.equipment_GUID=equipment.GUID AND customer_equipment.GUID =?', [VAR_CUSTOMER_EQUIPMENT_GUID], callbackFillCustomerEquipmentRecord, [], true);
+			//showPageCustomerEquipment(cell_current.innerText);
+		}
+	}
+}
+function tableCustomerEquipmentSearchClick(sender) {
+	let callbackFillCustomerEquipment = function(error_level, arrayResult, param) {
+		if(error_level < 0) { return -1; }
+		if(arrayResult.length < 1) { return -1; }
+		//VAR_EQUIPMENT_GUID = arrayResult[0].GUID;
+		P_CUSTOMER_EDIT_EQUIP_TITLE.innerHTML = arrayResult[0].title+' '+arrayResult[0].model;
+		INPUT_CUSTOMER_EDIT_EQUIP_SERIAL.value = '';
+		INPUT_CUSTOMER_EDIT_EQUIP_INVENT.value = '';
+		INPUT_CUSTOMER_EDIT_EQUIP_DATE.value = '';
+	}
+	for(let i=0; i < sender.childNodes.length; i++) {
+		let cell_current = sender.childNodes[i];
+		if(cell_current.getAttribute('data-name') == 'GUID') {
+			VAR_EQUIPMENT_GUID = cell_current.innerText;
+			//showPageCustomerEquipment(cell_current.innerText);
+			closePopup(DIV_POPUP_ADD_CUSTOMER_EQUIPMENT);
+			show(DIV_POPUP_EDIT_CUSTOMER_EQUIPMENT);
+			EngineDB.executeSql('SELECT * FROM equipment WHERE GUID =?', [VAR_EQUIPMENT_GUID], callbackFillCustomerEquipment, [], true);
+		}
+	}
+}
+
+//====================================================================================================================================//
+//	ADD ELEMENT
+
+function addEquipment() {
+	let equipment_category = 0;
+	if( SELECT_EQUIPMENT_CATEGORY.selectedIndex != -1)
+	{
+		equipment_category = SELECT_EQUIPMENT_CATEGORY.options[SELECT_EQUIPMENT_CATEGORY.selectedIndex].value;
+	} else {
+		INPUT_EQUIPMENT_TITLE.value = '';
+		INPUT_EQUIPMENT_MODEL.value = '';
+		INPUT_EQUIPMENT_MANUFACTURER.value = '';
+		return -1;
+	}
+	EngineDB.addEquipment(VAR_EQUIPMENT_GUID, equipment_category, INPUT_EQUIPMENT_TITLE.value, INPUT_EQUIPMENT_MODEL.value, INPUT_EQUIPMENT_MANUFACTURER.value);
+	INPUT_EQUIPMENT_TITLE.value = '';
+	INPUT_EQUIPMENT_MODEL.value = '';
+	INPUT_EQUIPMENT_MANUFACTURER.value = '';
+	closePopup(DIV_POPUP_EDIT_EQUIPMENT);
+}
+
+function addCustomer() {
+	EngineDB.addCustomer(INPUT_CUSTOMER_TITLE.value, INPUT_CUSTOMER_TOWN.value);
+	closePopup(DIV_POPUP_EDIT_CUSTOMER);
+	INPUT_CUSTOMER_TITLE.value = '';
+	INPUT_CUSTOMER_TOWN.value = '';
+}
+
+function addContract() {
+	EngineDB.addContract(INPUT_CONTRACT_GUID.value, INPUT_CONTRACT_CUSTOMER_GUID.value, INPUT_CONTRACT_DESCRIPTION.value);
+	closePopup(DIV_POPUP_EDIT_CONTRACT);
+	INPUT_CONTRACT_GUID.value = '';
+}
+
+function addCustomerEquipment() {
+	let GUID = INPUT_CUSTOMER_EDIT_EQUIP_GUID.value;
+	if(GUID == undefined) { GUID = ''; }
+	EngineDB.addCustomerEquipment(GUID, '', VAR_CUSTOMER_GUID, VAR_EQUIPMENT_GUID, INPUT_CUSTOMER_EDIT_EQUIP_SERIAL.value, INPUT_CUSTOMER_EDIT_EQUIP_INVENT.value, INPUT_CUSTOMER_EDIT_EQUIP_DATE.value);
+	closePopup(DIV_POPUP_EDIT_CUSTOMER_EQUIPMENT);
+	INPUT_CUSTOMER_EDIT_EQUIP_GUID.value = '';
+	P_CUSTOMER_EDIT_EQUIP_TITLE.innerText = '';
+	INPUT_CUSTOMER_EDIT_EQUIP_SERIAL.value = '';
+	INPUT_CUSTOMER_EDIT_EQUIP_INVENT.value = '';
+	INPUT_CUSTOMER_EDIT_EQUIP_DATE.value = '';
+}
+
+//====================================================================================================================================//
+//	FILL SELECT
+
+
+
+//====================================================================================================================================//
+//	CLEAR TABLES
+
+function clearTable(table_pointer) {
+	table_pointer.tBodies[0].innerHTML = '';
+}
+
+//====================================================================================================================================//
+//	FILL TABLES
+
+function fillEquipmentTable() {
+	INPUT_SEARCH.onkeypress = function(event) {
+		if(event.keyCode == 13) {
+			fillEquipmentTable();
+		}
+	}
+	var search_text = '%'+INPUT_SEARCH.value+'%';
+	clearTable(TABLE_EQUIPMENT);
+	fillTable(TABLE_EQUIPMENT, HTML_TABLE_EQUIPMENT, 'SELECT GUID, "<p class=\'p_first_table_string\'>" || title || "</p><p class=\'p_second_table_string\'>" || model || "</p>" AS title_model, manufacturer '+
+			'FROM equipment WHERE title LIKE ? OR model LIKE ?', [search_text, search_text], 'SELECT COUNT(1) FROM equipment WHERE title LIKE ? OR model LIKE ?', [search_text, search_text]);
+}
+
+function fillCustomerTable() {
+	INPUT_SEARCH.onkeypress = function(event) {
+		if(event.keyCode == 13) {
+			fillCustomerTable();
+		}
+	}
+	var search_text = '%'+INPUT_SEARCH.value+'%';
+	clearTable(TABLE_CUSTOMER);
+	fillTable(TABLE_CUSTOMER, HTML_TABLE_CUSTOMER, 'SELECT GUID, title AS customer_title FROM customer WHERE title LIKE ? OR town LIKE ?', [search_text, search_text], 
+			'SELECT COUNT(1) FROM customer WHERE title LIKE ? OR town LIKE ?', [search_text, search_text]);
+}
+
+function fillContractTable() {
+	INPUT_SEARCH.onkeypress = function(event) {
+		if(event.keyCode == 13) {
+			fillContractTable();
+		}
+	}
+	var search_text = '%'+INPUT_SEARCH.value+'%';
+	clearTable(TABLE_CONTRACT);
+	fillTable(TABLE_CONTRACT, HTML_TABLE_CONTRACT, 'SELECT contract.GUID AS GUID, customer.GUID AS customer_GUID, customer.title AS customer_title, contract.description '+
+			'FROM contract, customer WHERE contract.customer_GUID=customer.GUID AND customer.title LIKE ?', [search_text], 
+			'SELECT COUNT(1) FROM contract, customer WHERE contract.customer_GUID=customer.GUID AND customer.title LIKE ?', [search_text]);
+}
+
+function fillCustomerEquipmentSearchTable() {
+	INPUT_SEARCH_EQUIPMENT.onkeypress = function(event) {
+		if(event.keyCode == 13) {
+			fillCustomerEquipmentSearchTable();
+		}
+	}
+	var search_text = '%'+INPUT_SEARCH_EQUIPMENT.value+'%';
+	clearTable(TABLE_CUSTOMER_EQUIPMENT_SEARCH);
+	fillTable(TABLE_CUSTOMER_EQUIPMENT_SEARCH, HTML_TABLE_EQUIPMENT, 'SELECT GUID, title || "</br>" || model AS title_model, manufacturer FROM equipment WHERE title LIKE ? OR model LIKE ?', [search_text, search_text], 'SELECT COUNT(1) FROM equipment WHERE title LIKE ? OR model LIKE ?', [search_text, search_text]);
+}
+
+function fillCustomerEquipmentTable(customer_GUID) {
+	clearTable(TABLE_CUSTOMER_EQUIPMENT);
+	fillTable(TABLE_CUSTOMER_EQUIPMENT, HTML_TABLE_CUSTOMER_EQUIPMENT, 
+			'SELECT customer_equipment.GUID, equipment.title || "</br>" || equipment.model || " " || customer_equipment.date_create AS title_model_date, customer_equipment.num_serial '+
+			'|| "</br>" || customer_equipment.num_invent AS num_serial_invent FROM customer_equipment, equipment WHERE customer_equipment.equipment_GUID = equipment.GUID AND customer_GUID = ?', [customer_GUID],
+			'SELECT COUNT(1) FROM customer_equipment, equipment WHERE customer_equipment.equipment_GUID = equipment.GUID AND customer_GUID = ?', [customer_GUID]);
+}
+
+function fillEquipmentFields(is_edit = false) {
+	function fillEquipmentCategory() {
+		fillSelect(SELECT_EQUIPMENT_CATEGORY, HTML_TABLE_EQUIPMENT_CAT, 'SELECT GUID, title AS category_title FROM equipment_category', [], 'SELECT COUNT(1) FROM equipment_category', []);
+	}
+	callbackFillEquipmentFields = function(error_level, arrayResult, param) {
+		if(error_level < 0) { return -1; }
+		if(arrayResult.length < 1) { return -1; }
+		INPUT_EQUIPMENT_TITLE.value = arrayResult[0].title;
+		INPUT_EQUIPMENT_MODEL.value = arrayResult[0].model;
+		INPUT_EQUIPMENT_MANUFACTURER.value = arrayResult[0].manufacturer;
+	}
+	if(is_edit) {
+		EngineDB.executeSql('SELECT * FROM equipment WHERE GUID =?', [VAR_EQUIPMENT_GUID], callbackFillEquipmentFields, [], true);
+		
+	}
+	fillEquipmentCategory();
+}
+
+//====================================================================================================================================//
+//	HIDE ELEMENT
+
+function hideAll() {
+	FLOAT_TABLE_BUTTON.style.display			= 'none';
+	DIV_MAIN_PAGE.style.display					= 'none';
+	DIV_FINDER.style.display					= 'none';
+	DIV_POPUP_EDIT_EQUIPMENT.style.display	= 'none';
+	DIV_POPUP_EDIT_CUSTOMER.style.display		= 'none';
+	DIV_POPUP_ADD_CUSTOMER_EQUIPMENT.style.display	= 'none';
+	DIV_POPUP_EDIT_CUSTOMER_EQUIPMENT.style.display	= 'none';
+	DIV_PAGE_EQUIPMENT.style.display			= 'none';
+	DIV_PAGE_CUSTOMER.style.display			= 'none';
+	DIV_PAGE_CONTRACT.style.display			= 'none';
+	DIV_PAGE_CUSTOMER_DESCRIPTION.style.display		= 'none';
+}
+function show(element) {
+	element.style.display = 'block';
+}
+function closePopup(element) {
+	element.style.display = 'none';
+}
+
+</script>
+
+</HEAD>
+<BODY>
+<div class='top_menu' id='top_menu'></div>
+<br><br><br>
+<div class='mainPage' id='mainPage'></div>
+
+<div class='visual_table' id='div_finder'>
+	<a href=# onclick='' id='button_finder_add'>add equipment</a>
+	<div class='div_search'>
+	<table  class='edit_table'><tr><td width='100%'><input type='text' id='input_search'></td>		<td><a href=# onclick='fillEquipmentTable()' class='single_button'>&#128269</a></td></tr></table>
+	</div>
+	<p id='p_search_description'></p>
+</div>
+
+<div class='visual_table' id='div_main_page'>
+	<a href='#' onclick='showPageEquipment()'>equipment</a></br></br>
+	<a href='#' onclick='showPageCustomer()'>customer</a></br></br>
+	<a href='#' onclick='showPageContract()'>contract</a></br></br>
+</div>
+
+<div class='float_table_button' id='float_table_button'>
+<p class='float_table_button'><img class='float_table_button' src='images/arrow_r.png'></p>
+</div>
+
+
+
+<!-- DATA TABLES BEGIN -->
+<!-- table equipment -->
+<div class='visual_table' id='div_page_equipment'>
+	<table class='visual_table' id='table_equipment' width='100%' data-function='tableEquipmentClick'>
+		<caption>equipment table</caption>
+		<thead></thead>
+		<tbody></tbody>
+		<tfoot></tfoot>
+	</table>
+</div>
+<!-- table customer -->
+<div class='visual_table' id='div_page_customer'>
+	<table class='visual_table' id='table_customer' width='100%' data-function='tableCustomerClick'>
+		<caption>Customer table</caption>
+		<thead></thead>
+		<tbody></tbody>
+		<tfoot></tfoot>
+	</table>
+</div>
+<!-- table contract -->
+<div class='visual_table' id='div_page_contract'>
+	<table class='visual_table' id='table_contract' width='100%' data-function='tableContractClick'>
+		<caption>Contract table</caption>
+		<thead></thead>
+		<tbody></tbody>
+		<tfoot></tfoot>
+	</table>
+</div>
+<!-- table customer equipment -->
+<div class='div_normal' id='div_page_customer_description'>
+	<div class='visual_table'>
+	<table class='edit_table'>
+		<tr><td  width=100>customer title</td>		<td><p id='customer_title_descr'></p></td></tr>
+		<tr><td>customer town</td>		<td><p id='customer_town_descr'></p></td></tr>
+	</table>
+	</div>
+	<div class='visual_table'>
+		<a href='#' onclick='show(DIV_POPUP_ADD_CUSTOMER_EQUIPMENT)'>add equipment</a>
+		<table class='visual_table' id='table_customer_equipment' width='100%' data-function='tableCustomerEquipmentClick'>
+			<caption>customer equipment table</caption>
+			<thead></thead>
+			<tbody></tbody>
+			<tfoot></tfoot>
+		</table>
+	</div>
+	<div class='visual_table'>
+		<a href='#' onclick='show(DIV_POPUP_EDIT_CONTRACT)'>add contract</a>
+		<table class='visual_table' id='table_customer_contract' width='100%' data-function='tableCustomerContractClick'>
+			<caption>customer contract</caption>
+			<thead></thead>
+			<tbody></tbody>
+			<tfoot></tfoot>
+		</table>
+	</div>
+</div>
+
+<!-- DATA TABLES END -->
+
+
+
+<!-- EDITOR POPUP BEGIN -->
+<!-- popup equipment -->
+<div class='div_popup' id='div_popup_edit_equipment' style='display: none'>
+	<div class='visual_table'>
+	<table class='edit_table'>
+		<tr><td width=100>category</td>		<td><select id='select_equipment_category'></select></td></tr>
+		<tr><td>title</td>		<td><input type='text' id='input_equipment_title'></td></tr>
+		<tr><td>model</td>		<td><input type='text' id='input_equipment_model'></td></tr>
+		<tr><td>manufacturer</td>		<td><input type='text' id='input_equipment_manufacturer'></td></tr>
+		<tr><td></td>	<td><a href=# onclick='addEquipment(); return false' class='link_button'>save</a></td></tr>
+		<tr><td></td>	<td><a href=# onclick='closePopup(DIV_POPUP_EDIT_EQUIPMENT); return false' class='link_button'>cancel</a></td></tr>
+	</table>
+	</div>
+</div>
+<!-- popup customer -->
+<div class='div_popup' id='div_popup_edit_customer' style='display: none'>
+	<div class='visual_table'>
+	<table class='edit_table'>
+		<tr><td>customer title</td>		<td><input type='text' id='customer_title'></td></tr>
+		<tr><td>customer town</td>		<td><input type='text' id='customer_town'></td></tr>
+		<tr><td></td>	<td><a href=# onclick='addCustomer(); return false' class='link_button'>save</a></td></tr>
+		<tr><td></td>	<td><a href=# onclick='closePopup(DIV_POPUP_EDIT_CUSTOMER); return false' class='link_button'>cancel</a></td></tr>
+	</table>
+	</div>
+</div>
+<!-- popup contract -->
+<div class='div_popup' id='div_popup_edit_contract' style='display: none'>
+	<div class='visual_table'>
+	<table class='edit_table'>
+		<tr><td>customer title</td>		<td><p id='p_contract_customer_title'></p>		<input type='hidden' id='input_contract_GUID'>		<input type='hidden' id='input_contract_customer_GUID'></td></tr>
+		<tr><td>contract description</td>		<td><input type='text' id='input_contract_description'></td></tr>
+		<tr><td></td>	<td><a href=# onclick='addContract(); return false' class='link_button'>save</a></td></tr>
+		<tr><td></td>	<td><a href=# onclick='closePopup(DIV_POPUP_EDIT_CONTRACT); return false' class='link_button'>cancel</a></td></tr>
+	</table>
+	</div>
+</div>
+<!-- popup customer find equipment -->
+<div class='div_popup' id='div_popup_add_customer_equipment' style='display: none'>
+	<div class='visual_table'>
+		
+		<div class='div_search'>
+			<table  class='edit_table'>
+				<tr><td><a href=# onclick='closePopup(DIV_POPUP_ADD_CUSTOMER_EQUIPMENT); return false' class='link_button'>close</a></td>		<td></td></tr>
+				<tr><td><input type='text' id='input_search_equipment'></td>		<td><a href=# onclick='fillCustomerEquipmentSearchTable()' class='single_button'>&#128269</a></td></tr>
+			</table>
+		</div>
+		<p>Введите не менее трех букв названия или модели аппарата в поле поиска</p>
+		<p>Выберите нужный аппарат из таблицы</p>
+		<table class='visual_table' id='table_customer_equipment_search' width='100%' data-function='tableCustomerEquipmentSearchClick'>
+			<caption>equipment table</caption>
+			<thead></thead>
+			<tbody></tbody>
+			<tfoot></tfoot>
+		</table>
+	</div>
+</div>
+<!-- popup customer edit equipment -->
+<div class='div_popup' id='div_popup_edit_customer_equipment' style='display: none'>
+	<div class='visual_table'>
+			<table  class='edit_table'>
+				<tr><td>equipment</td>		<td><p id='p_customer_edit_equipment_title'></p></td></tr>
+				<tr><td>serial</td>			<td><input type='text' id='input_customer_edit_equipment_serial'></td></tr>
+				<tr><td>inven</td>			<td><input type='text' id='input_customer_edit_equipment_inven'></td></tr>
+				<tr><td>date create</td>	<td><input type='text' id='input_customer_edit_equipment_date'>		<input type='hidden' id='input_customer_edit_equipment_GUID'></td></tr>
+				<tr><td></td>	<td><a href=# onclick='addCustomerEquipment(); fillCustomerEquipmentTable(VAR_CUSTOMER_GUID)' class='link_button'>save</a></td></tr>
+				<tr><td></td>	<td><a href=# onclick='closePopup(DIV_POPUP_EDIT_CUSTOMER_EQUIPMENT); return false' class='link_button'>cancel</a></td></tr>
+			</table>
+	</div>
+</div>
+
+<!-- EDITOR POPUP END -->
+
+
+
+
+<div class='div_footer'></div>
+</BODY>
+</HTML>

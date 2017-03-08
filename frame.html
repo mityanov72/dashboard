@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+
+<meta charset="utf-8">
+<script src="tables.js"></script>
+<script src="menu.js"></script>
+
+<link href="style.css" rel="stylesheet">
+<link href="tables.css" rel="stylesheet">
+<link href="popup.css" rel="stylesheet">
+
+<script>
+this.name = 'INDEX';
+function fnc() {
+	alert('ddd');
+}
+
+function test() {
+	var frame = document.getElementById('frm');
+	frame.contentWindow.postMessage(this, 'EVENT_');
+}
+
+
+window.onload = function() {
+	alert(top);
+}
+	
+</script>
+
+</HEAD>
+<frameset>
+	<frame src="main.html" name="CONTENT" id='frm'></frame>
+</frameset>
+</HTML>
