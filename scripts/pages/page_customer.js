@@ -19,6 +19,7 @@ function page_customer_init() {
 	PAGE_CUSTOMER.popup_description		= {}	// окно с описанием клиента
 	PAGE_CUSTOMER.popup_find_equipment	= {}	// окно поиска аппарата из реестра
 	PAGE_CUSTOMER.popup_equipment_edit	= {}	// окно для добавления/редактирования аппарата
+	PAGE_CUSTOMER.popup_customer		= {}	// окно для добавления/редактирования клиента
 	
 	//	Функции на странице
 	PAGE_CUSTOMER.table_customer_click			= function() {}	// клик на таблице списка клиентов
@@ -34,15 +35,19 @@ function page_customer_init() {
 	PAGE_CUSTOMER.popup_description_show		= function() {}	// открытие окна с описанием клиента
 	PAGE_CUSTOMER.popup_find_equipment_show		= function() {}	// открытие окна с поиском оборудования
 	PAGE_CUSTOMER.popup_equipment_edit_show		= function() {}	// открытие окна с редактированием аппарата
+	PAGE_CUSTOMER.popup_customer_edit_show		= function() {}	// открытие окна добавления/редактирования клиента
 	
+	PAGE_CUSTOMER.customer_GUID					= undefined;	//	GUID клиента
+	PAGE_CUSTOMER.customer_equipment_GUID		= undefined;	//	GUID аппарата клиента (имеет серийник)
+	PAGE_CUSTOMER.find_equipment_GUID			= undefined;	//	GUID аппарата из таблицы оборудования (нет поля с серийником)	
 }
 
 function page_customer_prepare(){
 	//	основное окно
-	let panel_top = PAGE_CUSTOMER.add(Panel, '');
+	let panel_top = PAGE_CUSTOMER.add(Panel, 'cPanelTop');
 	panel_top.add(Button, '').init('добавить клиента', null, 150);
-	panel_top.add(SearchControl, '').setClick(PAGE_CUSTOMER.table_customer_fill);
-	let panel_main = PAGE_CUSTOMER.add(Panel, '');
+	panel_top.add(SearchControl, 'cSearchControl').setClick(PAGE_CUSTOMER.table_customer_fill);
+	let panel_main = PAGE_CUSTOMER.add(Panel, 'cPanelMain');
 	panel_main.add(Table, 'cTableCustomer');
 	
 	//	всплывающее окно
@@ -83,9 +88,13 @@ function page_customer_prepare(){
 	PAGE_CUSTOMER.equipment_edit_grid.addRow('', Button, '').init('сохранить', function() { alert('s'); }, '150');
 	PAGE_CUSTOMER.equipment_edit_grid.addRow('', Button, '').init('закрыть', function() { PAGE_CUSTOMER.page_customer_popup_equipment_edit.hide(); }, '150');
 	
-	PAGE_CUSTOMER.customer_GUID = undefined;											//	GUID клиента
-	PAGE_CUSTOMER.customer_equipment_GUID = undefined;									//	GUID аппарата клиента (имеет серийник)
-	PAGE_CUSTOMER.find_equipment_GUID = undefined;										//	GUID аппарата из таблицы оборудования (нет поля с серийником)
+	// окно для добавления/редактирования клиента
+	PAGE_CUSTOMER.popup_customer = PAGE_CUSTOMER.add(Popup, '');	
+	let popup_panel_customer_edit = PAGE_CUSTOMER.popup_customer.add(Panel);
+	PAGE_CUSTOMER.customer_edit_grid = popup_panel_customer_edit.add(Grid);
+	PAGE_CUSTOMER.customer_edit_grid.addRow();
+	
+
 
 }
 

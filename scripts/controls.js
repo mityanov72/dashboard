@@ -11,16 +11,20 @@ class Control {
 	}
 	add(aControl, aName) {
 		aName = aName || '';
+		this.controls[aName] = new aControl(aName);
 		if(aName == '') {
 			let i = 0;
-			let tmpName = this.element.className+'_'+i;
+			let tmpName = this.controls[aName].element.className+'_'+i;
 			while(this.controls[tmpName] !== undefined) {
 				i++;
-				tmpName = this.element.className+'_'+i;
+				tmpName = this.controls[aName].element.className+'_'+i;
 			}
+			this.controls[aName].name = tmpName;
+			this.controls[tmpName] = this.controls[aName];
+			delete this.controls[aName];
 			aName = tmpName;
 		}
-		this.controls[aName] = new aControl(aName);
+		
 		this.element.appendChild(this.controls[aName].element);
 		this.controls[aName].page = this.page;
 		if(aControl !== Page) {
