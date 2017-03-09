@@ -484,8 +484,8 @@ class DBEngine {
 		this.executeSqlSruct(STRUCT_TABLE_CLIENT_TRANSACT, REPLACE, [GUID_tr, struct_table.struct_name, REPLACE, record_GUID]);
 	}
 	
-	addCustomer(title, town) {
-		var GUID = guid();
+	addCustomer(GUID, title, town) {
+		GUID = GUID || guid();
 		this.addTransactRecord(STRUCT_TABLE_CUSTOMER, GUID, [0, 0, GUID, title, '', town]);
 	}
 	

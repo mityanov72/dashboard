@@ -36,6 +36,8 @@ function page_customer_init() {
 	PAGE_CUSTOMER.popup_find_equipment_show		= function() {}	// открытие окна с поиском оборудования
 	PAGE_CUSTOMER.popup_equipment_edit_show		= function() {}	// открытие окна с редактированием аппарата
 	PAGE_CUSTOMER.popup_customer_edit_show		= function() {}	// открытие окна добавления/редактирования клиента
+
+	PAGE_CUSTOMER.edit_customer					= function() {}	// изменение/добавление клиента
 	
 	PAGE_CUSTOMER.customer_GUID					= undefined;	//	GUID клиента
 	PAGE_CUSTOMER.customer_equipment_GUID		= undefined;	//	GUID аппарата клиента (имеет серийник)
@@ -45,7 +47,7 @@ function page_customer_init() {
 function page_customer_prepare(){
 	//	основное окно
 	let panel_top = PAGE_CUSTOMER.add(Panel, 'cPanelTop');
-	panel_top.add(Button, '').init('добавить клиента', null, 150);
+	panel_top.add(Button, '').init('добавить клиента', PAGE_CUSTOMER.popup_customer_edit_show, 150);
 	panel_top.add(SearchControl, 'cSearchControl').setClick(PAGE_CUSTOMER.table_customer_fill);
 	let panel_main = PAGE_CUSTOMER.add(Panel, 'cPanelMain');
 	panel_main.add(Table, 'cTableCustomer');
@@ -59,7 +61,7 @@ function page_customer_prepare(){
 	PAGE_CUSTOMER.popup_grid_customer.addRow('Наименование', Text, 'cTextTitle');
 	PAGE_CUSTOMER.popup_grid_customer.addRow('Город', Text, 'cTextTown');
 	PAGE_CUSTOMER.popup_grid_customer.addRow('', Button, '').init('добавить аппарат', PAGE_CUSTOMER.popup_find_equipment_show, '150');
-	PAGE_CUSTOMER.popup_grid_customer.addRow('', Button, '').init('Закрыть', page_customer_popup_description_close, '150');
+	PAGE_CUSTOMER.popup_grid_customer.addRow('', Button, '').init('закрыть', page_customer_popup_description_close, '150');
 	
 	//	вторая панель
 	let popup_panel_customer_equipment = PAGE_CUSTOMER.controls['cPopup'].add(Panel, '');
@@ -92,7 +94,10 @@ function page_customer_prepare(){
 	PAGE_CUSTOMER.popup_customer = PAGE_CUSTOMER.add(Popup, '');	
 	let popup_panel_customer_edit = PAGE_CUSTOMER.popup_customer.add(Panel);
 	PAGE_CUSTOMER.customer_edit_grid = popup_panel_customer_edit.add(Grid);
-	PAGE_CUSTOMER.customer_edit_grid.addRow();
+	PAGE_CUSTOMER.customer_edit_grid.addRow('Наименование', Input, 'cCaption');
+	PAGE_CUSTOMER.customer_edit_grid.addRow('Город', Input, 'cTown');
+	PAGE_CUSTOMER.customer_edit_grid.addRow('', Button, '').init('сохранить', function() { PAGE_CUSTOMER.edit_customer() }, 150);
+	PAGE_CUSTOMER.customer_edit_grid.addRow('', Button, '').init('закрыть', function() { PAGE_CUSTOMER.popup_customer.hide() }, 150);
 	
 
 
@@ -120,6 +125,7 @@ function page_customer_clear() {
 //	Заполнение таблиц
 //
 //	========================================================================================= //
+
 PAGE_CUSTOMER.table_customer_fill = function() {			// заполнение таблицы списка клиентов
 	let search_text = '%'+PAGE_CUSTOMER.controls['cPanelTop'].controls['cSearchControl'].getValue()+'%';
 	PAGE_CUSTOMER.controls['cPanelMain'].controls['cTableCustomer'].init(HTML_TABLE_CUSTOMER, 'SELECT GUID, title AS customer_title FROM customer WHERE title LIKE ? OR town LIKE ? ORDER BY title', [search_text, search_text], 
@@ -137,13 +143,13 @@ PAGE_CUSTOMER.table_find_equipment_fill = function() {		// заполнение 
 PAGE_CUSTOMER.table_contract_fill = function() {			// заполнение таблицы контрактов клиента
 
 }
+
 //	========================================================================================= //
 //
 //	Клики на таблицы
 //
 //	========================================================================================= //
-//
-//	Функция для обработки кликов на таблице
+
 PAGE_CUSTOMER.table_customer_click = function(sender) {
 	let callbackFunction = function(error_level, result, param) {
 		result = result[0];
@@ -174,8 +180,7 @@ PAGE_CUSTOMER.table_find_equipment_click = function(sender) {
 //	Всплывающие окна
 //
 //	========================================================================================= //
-//
-//	Функция для вызова всплывающего окна
+
 PAGE_CUSTOMER.popup_description_show = function() {			// открытие окна с описанием клиента
 	PAGE_CUSTOMER.controls['cPopup'].show();
 	PAGE_CUSTOMER.table_customer_equipment.init(HTML_TABLE_CUSTOMER_EQUIPMENT,
@@ -190,12 +195,19 @@ PAGE_CUSTOMER.popup_find_equipment_show = function() {		// открытие ок
 PAGE_CUSTOMER.popup_equipment_edit_show = function() {		// открытие окна с редактированием аппарата
 
 }
-function popup_find_equipment_show() {
-	PAGE_CUSTOMER.popup_find_equipment.show();
-	PAGE_CUSTOMER.table_find_equipment_fill();
+PAGE_CUSTOMER.popup_customer_edit_show = function() {		// открытие окна добавления/редактирования клиента
+	PAGE_CUSTOMER.popup_customer.show();
+	PAGE_CUSTOMER.customer_edit_grid.controls['cCaption'].setValue();
+	PAGE_CUSTOMER.customer_edit_grid.controls['cTown'].setValue();
+
 }
 
-
+PAGE_CUSTOMER.edit_customer = function() {
+	let aCaption = PAGE_CUSTOMER.customer_edit_grid.controls['cCaption'].getValue();
+	let aTown = PAGE_CUSTOMER.customer_edit_grid.controls['cTown'].getValue();
+	EngineDB.addCustomer('', aCaption, aTown);
+	PAGE_CUSTOMER.popup_customer.hide();
+}
 
 //	========================================================================================= //
 //	Функция для закрытия всплывающего окна

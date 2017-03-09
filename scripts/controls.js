@@ -105,6 +105,7 @@ class Input extends Control {
 		return this.element.value;
 	}
 	setValue(value) {
+		value = value || '';
 		this.element.value = value;
 	}
 	clear() {
@@ -122,6 +123,7 @@ class Text extends Control {
 		return this.element.innerHTML;
 	}
 	setValue(value) {
+		value = value || '';
 		this.element.innerHTML = value;
 	}
 	clear() {
