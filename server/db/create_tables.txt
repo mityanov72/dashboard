@@ -1,0 +1,93 @@
+
+
+CREATE TABLE `contract` (
+ `is_delete` int(11) NOT NULL,
+ `time_update` datetime NOT NULL,
+ `GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `customer_GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+ PRIMARY KEY (`GUID`),
+ UNIQUE KEY `GUID` (`GUID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+
+
+CREATE TABLE `customer` (
+ `is_delete` int(11) NOT NULL DEFAULT '0',
+ `time_update` datetime NOT NULL,
+ `GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+ `address` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `town` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+ PRIMARY KEY (`GUID`),
+ UNIQUE KEY `GUID` (`GUID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+
+
+CREATE TABLE `customer_equipment` (
+ `is_delete` int(11) NOT NULL DEFAULT '0',
+ `time_update` datetime NOT NULL,
+ `GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `QR_string` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+ `customer_GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `equipment_GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `num_serial` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+ `num_invent` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+ `date_create` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+ PRIMARY KEY (`GUID`),
+ UNIQUE KEY `GUID` (`GUID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+
+
+CREATE TABLE `equipment` (
+ `GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `is_delete` int(11) NOT NULL DEFAULT '0',
+ `time_update` datetime NOT NULL,
+ `category_GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+ `model` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+ `manufacturer` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+ PRIMARY KEY (`GUID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+
+
+CREATE TABLE `equipment_category` (
+ `GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `title` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+ PRIMARY KEY (`GUID`),
+ UNIQUE KEY `GUID` (`GUID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+
+
+CREATE TABLE `server_transact` (
+ `GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `time_update` datetime NOT NULL,
+ `table_name` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+ `query_type` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+ `record_GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ UNIQUE KEY `GUID` (`GUID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+
+
+CREATE TABLE `session` (
+ `GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `user_GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `last_expir` datetime NOT NULL,
+ `client` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+ PRIMARY KEY (`GUID`),
+ UNIQUE KEY `GUID` (`GUID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+
+
+CREATE TABLE `users` (
+ `is_delete` int(11) NOT NULL DEFAULT '0',
+ `time_update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ `GUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL,
+ `f_name` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+ `l_name` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+ `m_name` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `mail` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `hash` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+ `level` int(11) NOT NULL DEFAULT '0',
+ `department` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+ UNIQUE KEY `GUID` (`GUID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
