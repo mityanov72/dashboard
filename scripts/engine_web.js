@@ -1,8 +1,8 @@
-var WEB_SERVER = 'localhost';
-var WEB_SERVER_SYNC = 'sync_server.php'
-var WEB_CLIENT_SYNC = 'sync_client.php'
-var WEB_IS_ONLINE = 'is_online.php'
-var WEB_LOGIN = 'login.php';
+var WEB_SERVER = 'desc.ray72.ru';
+var WEB_SERVER_SYNC = 'server/sync_server.php'
+var WEB_CLIENT_SYNC = 'server/sync_client.php'
+var WEB_IS_ONLINE = 'server/is_online.php'
+var WEB_LOGIN = 'server/login.php';
 
 
 class WebEngine {

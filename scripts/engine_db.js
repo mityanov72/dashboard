@@ -1,4 +1,4 @@
-var DB_NAME = 'Test_db';
+var DB_NAME = 'dashboard';
 var DB_VERSION = '1.0';
 var DB_DESCRIPTION = 'Web SQL Storage Demo Database';
 var DB_SIZE = 1*1024*1024;

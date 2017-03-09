@@ -1,4 +1,7 @@
 <?php
+/*
+Это не настоящий файл! Это лишь пример файла, который должен лежать выше домашней папкы
+*/
 defined('_EXEC') or die('Restricted access');
 $db_host = 'localhost';
 $db_user = 'root';

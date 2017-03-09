@@ -1,8 +1,8 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 define( '_EXEC', 1);
-include_once '/const.php';
-require_once '/connection.php';
+include_once 'const.php';
+require_once '../../connection.php';
 
 function issetPostEmpty($value) {
 	if(isset($_POST[$value])) {

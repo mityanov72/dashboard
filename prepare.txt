@@ -1,5 +1,5 @@
 создаем символическую ссылку:
-mklink /d C:\xampp\htdocs D:\01_Documents\GitHub\web
+mklink /d C:\xampp\htdocs D:\01_Documents\GitHub\
 
 запускаем xampp:
 C:\xampp\xampp-control.exe

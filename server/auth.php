@@ -1,6 +1,6 @@
 <?php
 defined('_EXEC') or die('Restricted access');
-include_once '/const.php';
+include_once 'const.php';
 
 
 if(isset($_GET['SESSION'])) {

@@ -2,8 +2,8 @@
 header('Access-Control-Allow-Origin: *');
 
 define( '_EXEC', 1);
-include_once '/const.php';
-require_once '/connection.php';
+include_once 'const.php';
+require_once '../../connection.php';
 
 function getLoginResult($num_rows, $query_result) {
 	if($num_rows == 1) {

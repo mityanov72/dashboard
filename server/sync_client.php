@@ -2,8 +2,8 @@
 header('Access-Control-Allow-Origin: *');
 
 define( '_EXEC', 1);
-include_once '/const.php';
-require_once '/connection.php';
+include_once 'const.php';
+require_once '../../connection.php';
 $query_sring = "SELECT * FROM `users` LIMIT 10";
 
 //if($_GLOBAL['ACCESS_LEVEL'])
