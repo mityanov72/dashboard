@@ -1,0 +1,28 @@
+создаем символическую ссылку:
+mklink /d C:\xampp\htdocs D:\01_Documents\GitHub\web
+
+запускаем xampp:
+C:\xampp\xampp-control.exe
+
+GIT:
+
+git config --list
+
+cd D:\01_Documents\Dropbox\Work\01_WEB_app
+git init
+
+git status
+
+git add .
+
+git commit -m "first commit"
+
+git remote add origin https://github.com/mityanov72/dashboard
+git push -u origin master
+git push -f origin master
+
+git clone https://github.com/mityanov72/dashboard
+
+https://github.com/mityanov72/dashboard.git
+git remote add origin https://github.com/mityanov72/dashboard.git
+git push -u origin master
