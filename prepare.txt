@@ -26,3 +26,11 @@ git clone https://github.com/mityanov72/dashboard
 https://github.com/mityanov72/dashboard.git
 git remote add origin https://github.com/mityanov72/dashboard.git
 git push -u origin master
+
+feature Ч используетс€ при добавлении новой функциональности уровн€ приложени€
+fix Ч если исправили какую-то серьезную багу
+docs Ч всЄ, что касаетс€ документации
+style Ч исправл€ем опечатки, исправл€ем форматирование
+refactor Ч рефакторинг кода приложени€
+test Ч всЄ, что св€зано с тестированием
+chore Ч обычное обслуживание кода
