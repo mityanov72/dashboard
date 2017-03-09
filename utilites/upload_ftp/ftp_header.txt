@@ -1,0 +1,8 @@
+username
+password
+lcd D:\01_Documents\GitHub
+cd domains/desc.ray72.ru
+binary
+hash
+prompt
+
