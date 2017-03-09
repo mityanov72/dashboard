@@ -1,0 +1,29 @@
+<html>
+<head>
+<script>
+
+function User(name) {
+  this.name = name;
+}
+
+function TestClass(name) {
+	this.constructor = function(name) {
+		document.write("constructor worked!");
+	}
+	this.constructor();
+}
+
+
+
+window.onload = function() {
+	var Test = new TestClass();
+	var Test = new User();
+}
+
+
+</script>
+</head>
+<body>
+empty doc
+</body>
+</html>
