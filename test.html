@@ -1,28 +1,35 @@
 <html>
 <head>
+<script src="scripts/alasql.min.js"></script>
+<script src="scripts/database.js"></script>
+
 <script>
 
 
 
 window.onload = function() {
+	initDataBase();
+	document.write(sqlQueryCountFromServerTransact(SQL.TABLE_USERS));
 
-	db = openDatabase("ToDo", "0.1", "A list of to do items.", 200000);
-	if(!db){document.write("Failed to connect to database.");}
 
-	db.transaction(function(tx) {
-			tx.executeSql("CREATE TABLE ToDo (id REAL UNIQUE, label TEXT, timestamp REAL)", [], null, null);
-		});
-	for(let i=0; i < 200; i++) {
-		db.transaction(function(tx) {
-				tx.executeSql("INSERT INTO ToDo (label, timestamp) values(?, ?)", ["Купить iPad или HP Slate", new Date().getTime()], null, null);
-			});
-	}
+	/*var cityData = [{city:"Redmond", population:57530},
+		{city:"Atlanta",population:447841},
+		{city:"San Fracisco", population:837442}];
 
-	db.transaction(function(tx) {
-			tx.executeSql("SELECT COUNT() FROM ToDo", [], function(tx, result) { 
-				document.write('count in db: '+result['rows'][0]['COUNT()']); 
-			}, null);
-		});
+		// Create IndexdDB database and fill it with data from array
+	    alasql('CREATE LOCALSTORAGE DATABASE IF NOT EXISTS geo;\
+		    ATTACH LOCALSTORAGE DATABASE geo; \
+		    USE geo; \
+		    DROP TABLE IF EXISTS cities; \
+		    CREATE TABLE cities; \
+		    SELECT * INTO cities FROM ?', [cityData], function(){
+
+		    // Select data from IndexedDB
+	    	alasql('SELECT COLUMN * FROM cities WHERE city LIKE "%O%"',
+	    		[],function(res){
+	    			document.getElementById('res').textContent = res.join(', ');
+	    	});
+	    });*/
 
 }
 
@@ -30,6 +37,6 @@ window.onload = function() {
 </script>
 </head>
 <body>
-empty doc
+<p>Big cities:<span id="res"></span></p>
 </body>
 </html>
