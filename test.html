@@ -2,22 +2,28 @@
 <head>
 <script>
 
-function User(name) {
-  this.name = name;
-}
-
-function TestClass(name) {
-	this.constructor = function(name) {
-		document.write("constructor worked!");
-	}
-	this.constructor();
-}
-
 
 
 window.onload = function() {
-	var Test = new TestClass();
-	var Test = new User();
+
+	db = openDatabase("ToDo", "0.1", "A list of to do items.", 200000);
+	if(!db){document.write("Failed to connect to database.");}
+
+	db.transaction(function(tx) {
+			tx.executeSql("CREATE TABLE ToDo (id REAL UNIQUE, label TEXT, timestamp REAL)", [], null, null);
+		});
+	for(let i=0; i < 200; i++) {
+		db.transaction(function(tx) {
+				tx.executeSql("INSERT INTO ToDo (label, timestamp) values(?, ?)", ["Купить iPad или HP Slate", new Date().getTime()], null, null);
+			});
+	}
+
+	db.transaction(function(tx) {
+			tx.executeSql("SELECT COUNT() FROM ToDo", [], function(tx, result) { 
+				document.write('count in db: '+result['rows'][0]['COUNT()']); 
+			}, null);
+		});
+
 }
 
 

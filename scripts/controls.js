@@ -1,15 +1,15 @@
-class Control {
-	constructor(name) {
+function Control(name) {
+	this.constructor = function(name) {
 		this.visual_control = true;
 		this.name = name;
 		this.controls = {};
 		this.element = '';
 		this.page = undefined;
 	}
-	lateConstructor() {
+	this.lateConstructor = function() {
 	
 	}
-	add(aControl, aName) {
+	this.add = function(aControl, aName) {
 		aName = aName || '';
 		this.controls[aName] = new aControl(aName);
 		if(aName == '') {
@@ -33,16 +33,16 @@ class Control {
 		this.controls[aName].lateConstructor();
 		return this.controls[aName];
 	}
-	getControl(aName) {
+	this.getControl = function(aName) {
 		if(this.controls[aName] !== undefined) {
 			return this.controls[aName];
 		}
 		return undefined;
 	}
-	getControls() {
+	this.getControls = function() {
 		return this.controls;
 	}
-	findControl(aName) {
+	this.findControl = function(aName) {
 		let current_control = this.getControl(aName);
 		if(current_control == undefined) {
 			for(let childControl in this.controls)
@@ -55,12 +55,14 @@ class Control {
 		}
 		return current_control;
 	}
-	clear() {}
+	this.clear = function() {}
+	this.constructor(name);
 }
 
-class Page extends Control {
-	constructor(name, div, var_name) {
-		super(name);
+function Page(name, div, var_name) {
+	Control.call(this, name);
+	this.constructor = function(name, div, var_name) {
+		//super(name);
 		this.page = this;
 		this.var_name = var_name;
 		this.element = document.createElement('div');
@@ -73,82 +75,91 @@ class Page extends Control {
 		this.is_init = false;
 		//div.appendChild(this.element);
 	}
-	putControl(aControl) {
+	this.putControl = function(aControl) {
 		let exec_string = 'this.control_list.control_'+this.control_count+' = aControl';
 		eval(exec_string);
 		exec_string = 'this.control_list.control_'+this.control_count+'.element.id = "ctrl_'+this.control_count+'"';
 		eval(exec_string);
 		this.control_count++;
 	}
-	findControl(id) {
+	this.findControl = function(id) {
 		let id_num = id.substr(5);
 		let exec_string = 'this.control_list.control_'+id_num;
 		return eval(exec_string);
 	}
+	this.constructor(name, div, var_name);
 }
 
-class Panel extends Control {
-	constructor(name) {
-		super(name);
+function Panel(name) {
+	Control.call(this, name);
+	this.element;
+	this.constructor = function(name) {
+		//super(name);
 		this.element = document.createElement('div');
 		this.element.className = 'Panel';
 	}
+	this.constructor(name);
 }
 
-class Input extends Control {
-	constructor(name) {
-		super(name);
+function Input(name) {
+	Control.call(this, name);
+	this.constructor = function(name) {
+		//super(name);
 		this.element = document.createElement('input');
 		this.element.className = 'Input';
 	}
-	getValue() {
+	this.getValue = function() {
 		return this.element.value;
 	}
-	setValue(value) {
+	this.setValue = function(value) {
 		value = value || '';
 		this.element.value = value;
 	}
-	clear() {
+	this.clear = function() {
 		this.element.value = '';
 	}
+	this.constructor(name);
 }
 
-class Text extends Control {
-	constructor(name) {
-		super(name);
+function Text(name) {
+	Control.call(this, name);
+	this.constructor = function(name) {
+		//super(name);
 		this.element = document.createElement('p');
 		this.element.className = 'Text';
 	}
-	getValue() {
+	this.getValue = function() {
 		return this.element.innerHTML;
 	}
-	setValue(value) {
+	this.setValue = function(value) {
 		value = value || '';
 		this.element.innerHTML = value;
 	}
-	clear() {
+	this.clear = function() {
 		this.element.innerHTML = '';
 	}
+	this.constructor(name);
 }
 
-class Select extends Control {
-	constructor(name) {
-		super(name);
+function Select(name) {
+	Control.call(this, name);
+	this.constructor = function(name) {
+		//super(name);
 		this.element = document.createElement('select');
 		this.element.className = 'Select';
 	}
-	addOption(value, GUID) {
+	this.addOption = function(value, GUID) {
 		this.element.options[this.element.options.length] = new Option(value, GUID);
 		let newOption = this.element.options[this.element.options.length];
 	}
-	getValue() {
+	this.getValue = function() {
 		if(this.element.selectedIndex < 0) return undefined;
 		return this.element.options[this.element.selectedIndex].value;
 	}
-	setWidth(value) {
+	this.setWidth = function(value) {
 		this.element.style.width = value;
 	}
-	setSelect(GUID) {
+	this.setSelect = function(GUID) {
 		for(let i = 0; i < this.element.options.length; i++) {
 			let option = this.element.options[i];
 			if(option.value == GUID) {
@@ -156,7 +167,7 @@ class Select extends Control {
 			}
 		}
 	}
-	init(struct, query_string, qyery_param, query_string_count, qyery_param_count) {
+	this.init = function(struct, query_string, qyery_param, query_string_count, qyery_param_count) {
 		this.struct = struct;
 		this.query_string = query_string;
 		this.qyery_param = qyery_param;
@@ -164,7 +175,7 @@ class Select extends Control {
 		this.qyery_param_count = qyery_param_count;
 		this.fill();
 	}
-	fill() {
+	this.fill = function() {
 		let callbackGetRowCount = function(error_level, objResult, [sender]) {
 			let callbackGetRecord = function(error_level, objResult, [sender]) {
 				for(let i=0; i < sender.record_count; i++) {
@@ -180,45 +191,52 @@ class Select extends Control {
 		this.element.options.length = 0;
 		EngineDB.executeSql(this.query_string_count, this.qyery_param_count, callbackGetRowCount, [this], true);
 	}
+	this.constructor(name);
 }
 
-class Button extends Control {
-	constructor(name) {
-		super(name);
+function Button(name) {
+	Control.call(this, name);
+	this.constructor = function(name) {
+		//super(name);
 		this.element = document.createElement('a');
 		this.element.className = 'Button';
 		this.setText('button');
 		this.setClick(function() { alert('empty button') });
 	}
-	setText(text) {
+	this.setText = function(text) {
 		this.element.innerHTML = text;
 	}
-	setClick(link) {
+	this.setClick = function(link) {
 		this.element.href = '#';
 		this.element.onclick = link;
 	}
-	setWidth(value) {
+	this.setWidth = function(value) {
 		this.element.style.width = value;
 	}
-	init(text, link, width) {
+	this.init = function(text, link, width) {
 		this.setText(text);
 		this.setClick(link);
 		this.setWidth(width);
 	}
-	clear() {
+	this.clear = function() {
 		this.element.className = 'Button';
 		this.setText('button');
 		this.setClick(function() { alert('empty button') });
 	}
+	this.constructor(name);
 }
 
-class SearchControl extends Control {
-	constructor(name) {
-		super(name);
+function SearchControl(name) {
+	Control.call(this, name);
+	var parentLateConstructor = this.lateConstructor;
+	this.constructor = function(name) {
+		//super(name);
 		this.element = document.createElement('div');
 		this.element.className = 'SearchControl';
 	}
-	lateConstructor() {
+	
+	this.lateConstructor = function() {
+		parentLateConstructor.call(this);
 		var _search_table = this.element.appendChild(document.createElement('table'));
 		_search_table.className = '_search_table';
 		var tbody = _search_table.appendChild(document.createElement('tbody'));
@@ -234,29 +252,31 @@ class SearchControl extends Control {
 		this.setDescription('search description');
 		this.setClick(function() { alert('search button') });	
 	}
-	setDescription(text) {
+	this.setDescription = function(text) {
 		this.description.innerHTML = text;
 	}
-	getValue() {
+	this.getValue = function() {
 		return this.input.element.value;
 	}
-	clear() {
+	this.clear = function() {
 		this.input.element.value = '';
 	}
-	setClick(link) {
+	this.setClick = function(link) {
 		this.button.setClick(link);
 	}
+	this.constructor(name);
 }
 
-class Table extends Control {
-	constructor(name) {
-		super(name);
+function Table(name) {
+	Control.call(this, name);
+	this.constructor = function(name) {
+		//super(name);
 		this.element = document.createElement('table');
 		this.element.className = 'Table';
 		this.table_caption = this.element.appendChild(document.createElement('caption'));
 		this.table_body = this.element.appendChild(document.createElement('tbody'));
 	}
-	init(struct, query_string, qyery_param, query_string_count, qyery_param_count, caption, onclick) {
+	this.init = function(struct, query_string, qyery_param, query_string_count, qyery_param_count, caption, onclick) {
 		this.element.setAttribute('data-pagename', this.page.var_name);
 		this.element.setAttribute('data-tablename', this.name);
 		this.struct = struct;
@@ -268,7 +288,7 @@ class Table extends Control {
 		this.onclick = onclick;
 		this.fill();
 	}
-	addRow(json_row) {
+	this.addRow = function(json_row) {
 		let rowOnclick = function() {
 			let showButton = function(sender, parentTable) {
 				let point = getCoords(sender);
@@ -308,7 +328,7 @@ class Table extends Control {
 		}
 	}
 
-	fill() {
+	this.fill = function() {
 		let callbackGetRowCount = function(error_level, objResult, [sender]) {
 			let callbackGetRecord = function(error_level, objResult, [record_count, table_pointer, table_struct]) {
 				for(let i=0; i < record_count; i++) {
@@ -323,7 +343,7 @@ class Table extends Control {
 		this.clear();
 		EngineDB.executeSql(this.query_string_count, this.qyery_param_count, callbackGetRowCount, [this], true);
 	}
-	clear() {
+	this.clear = function() {
 		for(let i = 0; i < this.element.parentNode.childNodes.length; i++) {
 			if(this.element.parentNode.childNodes[i] == FLOAT_TABLE_BUTTON) {
 				FLOAT_TABLE_BUTTON.style.display = 'none';
@@ -331,16 +351,18 @@ class Table extends Control {
 		}
 		this.table_body = this.element.replaceChild(document.createElement('tbody'), this.element.tBodies[0]);
 	}
+	this.constructor(name);
 }
 
-class Grid extends Control {
-	constructor(name) {
-		super(name);
+function Grid(name) {
+	Control.call(this, name);
+	this.constructor = function(name) {
+		//super(name);
 		this.element = document.createElement('table');
 		this.element.className = 'Grid';
 		this.table_body = this.element.appendChild(document.createElement('tbody'));
 	}
-	addRow(description, aControl, aName) {
+	this.addRow = function(description, aControl, aName) {
 		let newRow = this.element.tBodies[0].insertRow(-1);
 		let newCell = newRow.insertCell(-1);
 		newCell.innerHTML = description;
@@ -349,22 +371,24 @@ class Grid extends Control {
 		newCell.appendChild(childControl.element);
 		return childControl;
 	}
+	this.constructor(name);
 }
 
-class Popup extends Control {
-	constructor(name) {
-		super(name);
+function Popup(name) {
+	Control.call(this, name);
+	this.constructor = function(name) {
+		//super(name);
 		this.element = document.createElement('div');
 		this.element.className = 'Popup';
 		this.hide();
 	}
-	hide() {
+	this.hide = function() {
 		this.element.style.display = 'none';
 	}
-	show() {
+	this.show = function() {
 		this.element.style.display = 'block';
 	}
-
+	this.constructor(name);
 }
 
 function getTrFieldValue(sender, name) {

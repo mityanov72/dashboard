@@ -12,8 +12,8 @@ var EngineDB = new DBEngine();
 var EngineWeb = new WebEngine();
 
 
-class MainApp {
-	constructor(name) {
+function MainApp(name) {
+	this.constructor = function(name) {
 		let interrupt = function() {
 			 for(var proc_name in Application.task_list) {
 				Application.checkProcess(proc_name);
@@ -41,12 +41,12 @@ class MainApp {
 		EngineDB.executeSqlSruct(STRUCT_TABLE_EQUIP_CAT, REPLACE, [0, 0, 'af222ad5-e346-11e6-83aa-0016364dcf75', 'рентгеновские аппараты'], null, null, DEBUG_DB_CREATE);
 		EngineDB.executeSqlSruct(STRUCT_TABLE_EQUIP_CAT, REPLACE, [0, 0, 'af2243bd-e346-11e6-83aa-0016364dcf75', 'биохимические анализаторы'], null, null, DEBUG_DB_CREATE);
 	}
-	queueOnline() {
+	this.queueOnline = function() {
 		if(this.stop) { return -1; }
 		Application.runIsDead(PROCESS_SYNC_CLIENT);
 		Application.runIsDead(PROCESS_SYNC_SERVER);
 	}
-	checkOnline() {
+	this.checkOnline = function() {
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', 'http://'+WEB_SERVER+'/'+WEB_IS_ONLINE, true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -66,10 +66,10 @@ class MainApp {
 			Application.online_flag = false;
 		}
 	}
-	get isOnline() {
+	this.isOnline = function() {
 		return this.online_flag;
 	}
-	get showTask() {
+	this.showTask = function() {
 		let result = 'PID    | process name\n-------+--------------------';
 		for(let process_name in this.task_list)
 		{
@@ -78,7 +78,7 @@ class MainApp {
 		//if(result !== '') Application.log(this, result);
 		return result;
 	}
-	checkProcess(process_name) {
+	this.checkProcess = function(process_name) {
 		if(this.task_list[process_name] == undefined) {
 			return DEAD;
 		}
@@ -93,7 +93,7 @@ class MainApp {
 		//this.task_list[process_name].alive == false;
 		return INIT;
 	}
-	init(class_name) {
+	this.init = function(class_name) {
 		let proc = new class_name();
 		let proc_name = proc.constructor.name;
 		if(this.task_list[proc_name] != undefined) {
@@ -105,7 +105,7 @@ class MainApp {
 		proc = undefined;
 		this.task_list[proc_name].INIT();
 	}
-	run(proc_or_class_name, proc_param) {
+	this.run = function(proc_or_class_name, proc_param) {
 		let type_var = typeof proc_or_class_name;
 		switch (type_var) {
 			case 'function':
@@ -136,7 +136,7 @@ class MainApp {
 		}
 		return 0;
 	}
-	runIsDead(proc_or_class_name, proc_param) {
+	this.runIsDead = function(proc_or_class_name, proc_param) {
 		let process_name = '';
 		let type_var = typeof proc_or_class_name;
 		switch (type_var) {
@@ -154,7 +154,7 @@ class MainApp {
 			this.run(proc_or_class_name, proc_param);
 		}
 	}
-	halt(proc_or_class_name) {
+	this.halt = function(proc_or_class_name) {
 		try {
 			let process_name = proc_or_class_name;
 			if(typeof proc_or_class_name == 'object') {
@@ -165,19 +165,19 @@ class MainApp {
 			delete this.task_list[process_name];
 		} catch(e) {}
 	}
-	static get elemClass() {
+	this.elemClass = function() {
 		return "menu"
 	}
-	log(sender, message) {
+	this.log = function(sender, message) {
 		EngineCon.log(sender, message);
 	}
-	error(sender, message) {
+	this.error = function(sender, message) {
 		EngineCon.error(sender, message);
 	}
-	catcher(sender, error) {
+	this.catcher = function(sender, error) {
 		EngineCon.catcher(sender, error);
 	}
-	login() {
+	this.login = function() {
 		function resFunction(error_level, ObjResult, sender) {
 			var result = JSON.parse(ObjResult);
 			localStorage['SESSION'] = result.session_GUID;
@@ -188,14 +188,14 @@ class MainApp {
 		source['HASH'] = 'psww';
 		EngineWeb.transmit(WEB_LOGIN, source, resFunction, this);
 	}
-	open(page_name) {
+	this.open = function(page_name) {
 		this.page_place = document.getElementById('mainPage');
 		this.page_place.innerHTML = '';
 		this.page_place.appendChild(this.page_list[page_name].element);
 		this.page_list[page_name].show();
 		setMenuDescription(this.page_list[page_name].description);
 	}
-	registryPage(page_name, page_description, init_function, show_function, function_clear) {
+	this.registryPage = function(page_name, page_description, init_function, show_function, function_clear) {
 		var page = new Page(page_name, Application.page_place, page_name);
 		eval(page_name+' = page');
 		this.page_list[page.name] = page;
@@ -205,6 +205,7 @@ class MainApp {
 		this.page_list[page.name].init();
 		this.page_list[page_name].description = page_description;
 	}
+	this.constructor(name);
 }
 
 var Application = new MainApp();

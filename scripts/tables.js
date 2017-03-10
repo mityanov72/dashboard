@@ -124,7 +124,7 @@ var HTML_TABLE_CONTRACT = {
 	}
 }
 
-
+/*
 //==================================================================================================================================================================================//
 //	fillTable	- заполняет HTML таблицу
 //
@@ -137,15 +137,6 @@ var HTML_TABLE_CONTRACT = {
 function fillTable(table_pointer, table_struct, query_string, qyery_param, query_string_count, qyery_param_count) {
 	let callbackGetRowCount = function(error_level, objResult, param) {
 		let callbackGetRecord = function(error_level, objResult, [record_count, table_pointer, table_struct]) {
-			/*if(table_struct.title_visible) {
-				let newRow = table_pointer.tHead.insertRow(-1);
-				for(let i=0; i < table_struct.column_count; i++) {
-					let newCell = newRow.insertCell(-1);
-					let column_title = eval('table_struct.column'+i+'.title');
-					//let value = eval('json_row.'+struct_column.title);
-					newCell.innerHTML = column_title;
-				}
-			}*/
 			for(let i=0; i < record_count; i++) {
 				setTimeout(function() {addRowInTable(table_pointer, table_struct, objResult[i])}, DELAY_ADD_RECORD*i);
 			}

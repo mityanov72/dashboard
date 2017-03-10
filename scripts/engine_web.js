@@ -5,11 +5,11 @@ var WEB_IS_ONLINE = 'server/is_online.php'
 var WEB_LOGIN = 'server/login.php';
 
 
-class WebEngine {
-	constructor(name) {
+function WebEngine(name) {
+	this.constructor = function(name) {
 		EngineCon.log(this, 'ready');
 	}
-	receive(site, params, resFunction) {
+	this.receive = function(site, params, resFunction) {
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', 'http://'+WEB_SERVER+'/'+site, true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -29,7 +29,7 @@ class WebEngine {
 			EngineCon.log(this, 'timeout XMLHttpRequest');
 		}
 	}
-	transmit(site, params, callback_function, callback_param) {
+	this.transmit = function(site, params, callback_function, callback_param) {
 		if(typeof(params) == 'object' || typeof(params) == 'Object') {
 			params = AssocArrayToString(params, '=', '&');
 		}
@@ -60,6 +60,7 @@ class WebEngine {
 			EngineCon.log(this, 'timeout XMLHttpRequest | site:'+site+' | POST_PARAM: '+params);
 		}
 	}
+	this.constructor(name);
 }
 
 

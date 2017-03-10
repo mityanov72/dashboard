@@ -365,8 +365,8 @@ if(localStorage['TIME_UPDATE'] == null) {
 
 
 
-class DBEngine {
-	constructor(name) {
+function DBEngine(name) {
+	this.constructor = function(name) {
 		this.dataBase = null;
 		EngineCon.log(this, 'ready');
 		if (window.openDatabase){
@@ -376,7 +376,7 @@ class DBEngine {
 		this.dataBase = openDatabase(DB_NAME, DB_VERSION, DB_DESCRIPTION, DB_SIZE);
 		this.createSqlTable();
 	}
-	createSqlTable() {
+	this.createSqlTable = function() {
 		let struct_table;
 		for(let i=0; i < window.STRUCT_TABLE.length; i++) {
 			struct_table = window.STRUCT_TABLE[i];
@@ -394,7 +394,7 @@ class DBEngine {
 	//
 	//	queryString			- текст SQL запроса
 	//	param, callback_function, callback_param - то же, что и у executeSqlSruct
-	executeSql(query_string, param, callback_function, callback_param, log_write = true){
+	this.executeSql = function(query_string, param, callback_function, callback_param, log_write = true){
 		this.dataBase.transaction(
 			function(tx) {
 				if(log_write) EngineCon.log(EngineDB, 'Query Success ['+query_string+']');
@@ -433,7 +433,7 @@ class DBEngine {
 	//	callback_function	- функция, которая будет вызвана после успешного выполнения текущей функции. в качестве параметров вызова будет: 
 	//						  error level - уровень ошибки (0 - ок); result_array_objects - массив объектов (строки таблицы) и callback_param (см. далее)
 	//	callback_param		- параметры, которые нужно будет передать call back функции, это массив, он вставляется в скобках: [param1, param2, ..]
-	executeSqlSruct(struct_table, type_query, param, callback_function, callback_param, log_write = true) {
+	this.executeSqlSruct = function(struct_table, type_query, param, callback_function, callback_param, log_write = true) {
 		var query_string;
 		switch(type_query) {
 			case(CREATE):
@@ -459,37 +459,37 @@ class DBEngine {
 		this.executeSql(query_string, param, callback_function, callback_param, log_write);
 	}
 	
-	getPagesTable(transmit_script, table_name, query_page = 1, callback_function) {
+	this.getPagesTable = function(transmit_script, table_name, query_page = 1, callback_function) {
 		getQueryFromTablenameToSync(table_name);
 	}
 	
-	addUser(f_name, l_name, m_name, mail) {
+	this.addUser = function(f_name, l_name, m_name, mail) {
 		var GUID = guid();
 		this.execSql(SQL_INSERT_USER, [GUID, mail, f_name, l_name, m_name]);
 	}
 	
-	selectUsers() {
+	this.selectUsers = function() {
 		var resFunction = function(level, JsonResult) {alert(JsonResult)};
 		//this.execSql(SQL_SELECT_USERS, [], resFunction);
 	}
 	
-	addChat(descr) {
+	this.addChat = function(descr) {
 		var GUID = guid();
 		this.addTransactRecord(STRUCT_TABLE_CHAT, GUID, [0, 0, GUID, descr]);
 	}
 	
-	addTransactRecord(struct_table, record_GUID, params) {
+	this.addTransactRecord = function(struct_table, record_GUID, params) {
 		let GUID_tr = guid();
 		this.executeSqlSruct(struct_table, REPLACE, params);
 		this.executeSqlSruct(STRUCT_TABLE_CLIENT_TRANSACT, REPLACE, [GUID_tr, struct_table.struct_name, REPLACE, record_GUID]);
 	}
 	
-	addCustomer(GUID, title, town) {
+	this.addCustomer = function(GUID, title, town) {
 		GUID = GUID || guid();
 		this.addTransactRecord(STRUCT_TABLE_CUSTOMER, GUID, [0, 0, GUID, title, '', town]);
 	}
 	
-	addEquipment(GUID, category, title, model, manufacturer) {
+	this.addEquipment = function(GUID, category, title, model, manufacturer) {
 		if(GUID == '') {
 			GUID = guid();
 		}
@@ -497,24 +497,24 @@ class DBEngine {
 		//this.executeSql("REPLACE INTO equipment (is_delete, time_update, GUID, category, title, model, manufacturer) VALUES (?, ?, ?, ?, ?, ?, ?)", [0, 0, GUID, category, title, model, manufacturer]);
 	}
 	
-	addCustomerEquipment(GUID, qr_string, customer_guid, equipment_guid, num_serial, num_invent, date_create) {
+	this.addCustomerEquipment = function(GUID, qr_string, customer_guid, equipment_guid, num_serial, num_invent, date_create) {
 		if(GUID == '') {
 			GUID = guid();
 		}
 		this.addTransactRecord(STRUCT_TABLE_CUSTOMER_EQUIPMENT, GUID, [0, 0, GUID, qr_string, customer_guid, equipment_guid, num_serial, num_invent, date_create]);
 	}
 	
-	addContract(GUID, customer_GUID, description) {
+	this.addContract = function(GUID, customer_GUID, description) {
 		if(GUID == '') {
 			GUID = guid();
 		}
 		this.addTransactRecord(STRUCT_TABLE_CONTRACT, GUID, [0, 0, GUID, customer_GUID, description]);
 	}
 	
-	addNonTransactRecord() {
+	this.addNonTransactRecord = function() {
 		//this.execSql(query_insert_name, params);
 	}
-	
+	this.constructor(name);
 }
 
 
