@@ -1,4 +1,5 @@
 var WEB_SERVER = 'desc.ray72.ru';
+WEB_SERVER = 'localhost';
 var WEB_SERVER_SYNC = 'server/sync_server.php'
 var WEB_CLIENT_SYNC = 'server/sync_client.php'
 var WEB_IS_ONLINE = 'server/is_online.php'

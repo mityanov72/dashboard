@@ -545,6 +545,7 @@ function getStructTableFromName(table_name) {
 	}*/
 }
 
+/*
 class PROCESS_SYNC_SERVER extends PROCESS {
 	START() {
 		this.syncServer();
@@ -628,9 +629,6 @@ class PROCESS_SYNC_SERVER extends PROCESS {
 }
 
 class PROCESS_SYNC_CLIENT extends PROCESS {
-/*
-	this.callback_function(level, total_count, current_position)
-*/
 	constructor() {
 		super();
 		this.count_record = 0;
@@ -745,4 +743,4 @@ class PROCESS_SYNC_CLIENT extends PROCESS {
 		EngineDB.executeSqlSruct(struct_table, REPLACE, param, funct_del_transact, [sender, callback_param[0].table_name], DEBUG_PROCESS_SYNC_CLIENT);
 	}
 }
-
+*/

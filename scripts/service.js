@@ -1,44 +1,11 @@
-class PROCESS {
-	constructor(name) {
-		this.name = name;
-		this.PID = getRandomInt(1000, 9999);
-		this.status;
-		this.is_kill = false;
-		this.alive = false;
-		this.live_time = 10000;
-		this.callback_function = undefined;
-		//setTimeout(function(){ if(this == window) { return -1; } this.watchDog(this);}, this.live_time);
-	}
-	watchDog() {
-		if(this.alive == false) { this.is_kill = true; }
-		this.alive = false;
-		Application.error(this, 'WatchDog run ['+this.PID+']')
-		//setTimeout(function(){sender.watchDog(sender);}, sender.live_time);
-	}
-	INIT() {
-	
-	}
-	START() {
-	
-	}
-	STOP() {
-	
-	}
-	HALT(timeout = 0) {
-		this.is_kill = true;
-		this.alive = false;
-		let this_proc = this;
-		setTimeout(function() {Application.halt(this_proc);}, timeout);
-	}
-	
-}
-
 var IDLE = 0;
 var RUN = 1;
 var STOP = 2;
 
 var CONST_TIME_SERVICE_DELAY = 6000;
 var CONST_TIME_SERVICE_DELAY_NEXT_PUSH = 500;
+
+
 
 function SERVICE(name) {
 	this.status_push = STOP;
@@ -63,10 +30,11 @@ function SERVICE_SYNC_SERVER() {
 	this.status_push = IDLE;
 	this.status_pull = IDLE;
 	this.START = function() {
-		setTimeout(function()	{
-									if(this.status_push !== RUN) this.push(); 
-									if(this.status_pull !== RUN) this.pull();
-								}, CONST_TIME_SERVICE_DELAY);}
+		let callback = function(sender) {
+			if(sender.status_push !== RUN) sender.push(); 
+			if(sender.status_pull !== RUN) sender.pull();
+		}
+		setInterval(callback, CONST_TIME_SERVICE_DELAY, this);
 	}
 	this.status = function() {
 		if(this.status_pull == RUN || this.status_push == RUN) {
@@ -165,97 +133,83 @@ function SERVICE_SYNC_SERVER() {
 
 function SERVICE_SYNC_CLIENT() {
 	SERVICE.call(this, 'SERVICE_SYNC_CLIENT');
-	this.count_record = 0;
+	this.status = IDLE;
 	this.START = function() {
-		//	асинхронная функция, перебирает названия таблиц из server_transact
-		let getTransactTableName = function(callback_function, sender) {
-			let resFunction = function(error_level, ObjResult, sender) {
-				if(error_level < 0) {
-					sender.HALT(2*CONST_TIME_PROC_DELAY);
-					return -1;
-				}
-				sender.alive = true;
-				let record_GUID;
-				let table_name_array = [];
-				for(let i=0; i < ObjResult.length; i++) {
-					table_name_array[i] = ObjResult[i].table_name;
-				}
-				for(let i=0; i < table_name_array.length; i++) {
-					if(sender.is_kill) return -999;
-					let table_name = table_name_array[i];
-					setTimeout(function() {sender.syncTable(table_name);}, CONST_TIME_PROC_DELAY);
-				}
-				if(table_name_array.length == 0) sender.HALT(2*CONST_TIME_PROC_DELAY);
-			}
-			sender.alive = true;
-			EngineDB.executeSql(SQL_SELECT_SERVER_TRANSACT_TABLENAME, [], resFunction, sender, DEBUG_PROCESS_SYNC_CLIENT);
+		let callback = function(sender) {
+			if(sender.status !== RUN) sender.lookTables(); 
 		}
-		this.alive = true;
-		getTransactTableName(null, this);
+		setInterval(callback, CONST_TIME_SERVICE_DELAY, this);
 	}
 	this.syncTable = function(table_name) {
-		if(this.is_kill) return -999;
+		this.status = RUN;
 		this.getLocalRecordCount();
-		this.getLocalFirstRecord(table_name, this);
+		this.getLocalFirstRecord(table_name);
+	}
+	//	асинхронная функция, перебирает названия таблиц из server_transact
+	this.lookTables = function() {
+		let callback = function(error_level, ObjResult, sender) {
+			if(error_level < 0) {
+				this.status = IDLE;
+				return -1;
+			}
+			let record_GUID;
+			let table_name_array = [];
+			for(let i=0; i < ObjResult.length; i++) {
+				table_name_array[i] = ObjResult[i].table_name;
+			}
+			for(let i=0; i < table_name_array.length; i++) {
+				if(sender.is_kill) return -999;
+				let table_name = table_name_array[i];
+				setTimeout(function() {sender.syncTable(table_name);}, CONST_TIME_PROC_DELAY);
+			}
+			if(table_name_array.length == 0) this.status = IDLE;
+		}
+		this.status = RUN;
+		EngineDB.executeSql(SQL_SELECT_SERVER_TRANSACT_TABLENAME, [], callback, this, DEBUG_PROCESS_SYNC_CLIENT);
 	}
 	//	getLocalFirstRecord - асинхронная функция, возвращает первую запись из локальной таблицы server_transact по имени таблицы
-	this.getLocalFirstRecord = function(table_name, callback_param) {
-		let callFunction = function(error_level, result_array_objects, sender) {
+	this.getLocalFirstRecord = function(table_name) {
+		let callback = function(error_level, result_array_objects, sender) {
 			if(error_level < 0) {
-				sender.HALT(2*CONST_TIME_PROC_DELAY);
+				this.status = IDLE;
 				return -1;
 			}
 			try {
 				if(result_array_objects.length > 0) {
-					sender.alive = true;
 					sender.getServerFirstRecord(table_name, result_array_objects[0].record_GUID, result_array_objects);
 				}
 			} catch(e) {EngineCon.catcher(EngineDB, e);}
 		}
-		this.alive = true;
-		EngineDB.executeSql(SQL_SELECT_SERVER_TRANSACT, [table_name], callFunction, this, DEBUG_PROCESS_SYNC_CLIENT);
+		EngineDB.executeSql(SQL_SELECT_SERVER_TRANSACT, [table_name], callback, this, DEBUG_PROCESS_SYNC_CLIENT);
 	}
-
-	//==================================================================================================================================================================================//
 	//	getServerFirstRecord - асинхронная функция, возвращает одну запись из серверной таблицы по GUID
-	//
-	//	table_name			- имя таблицы, в которой ищется запись
-	//	GUID				- GUID записи
-	//	callback_param		- параметры, которые нужно будет передать call back функции, это массив, он вставляется в скобках: [param1, param2, ..]
 	this.getServerFirstRecord = function(table_name, GUID, callback_param) {
-		this.alive = true;
 		let source = {};
 		source['SQL_QUERY_NAME'] = 'SQL_SELECT_'+table_name.toUpperCase();
 		source['GUID'] = GUID;
 		EngineWeb.transmit(WEB_CLIENT_SYNC, source, this.addRecordFromServer, [this, callback_param]);
 	}
-	
-	//==================================================================================================================================================================================//
-	//	getLocalRecordCount - асинхронная функция, возвращает количество строк в таблице server_transact для указанной таблицы (структуры)
-	//
-	this.getLocalRecordCount = function(callback_param) {
-		let callFunction = function(error_level, result_array_objects, sender) {
+	//	getLocalRecordCount - НЕ ИСПОЛЬЗУЕТСЯ ПОКА. асинхронная функция, возвращает количество строк в таблице server_transact для указанной таблицы (структуры)
+	this.getLocalRecordCount = function() {
+		let callback = function(error_level, result_array_objects, sender) {
 			if(error_level < 0) {
-				sender.HALT(2*CONST_TIME_PROC_DELAY);
+				this.status = IDLE;
 				return -1;
 			}
 			try {
 				let res = getOnceObjectProper(result_array_objects[0]);//['COUNT(1)'];
 				if(sender.callback_function != undefined) sender.callback_function(error_level, res, 0);
-				sender.alive = true;
 			} catch(e) {
 				EngineCon.catcher(EngineDB, e);
 			}
 		}
-		this.alive = true;
-		EngineDB.executeSql(COUNT_FROM_SERVER_TRANSACT, [], callFunction, this, DEBUG_PROCESS_SYNC_CLIENT);
+		EngineDB.executeSql(COUNT_FROM_SERVER_TRANSACT, [], callback, this, DEBUG_PROCESS_SYNC_CLIENT);
 	}
 	this.addRecordFromServer = function(error_level, result_array_objects, [sender, callback_param]) {
 		if(error_level < 0) {
-			sender.HALT(2*CONST_TIME_PROC_DELAY);
+			this.status = IDLE;
 			return -1;
 		}
-		sender.alive = true;
 		let funct_next_record = function(error_level, empty, [sender, table_name]) {
 			setTimeout(function() {sender.syncTable(table_name);}, CONST_TIME_PROC_DELAY);
 		}

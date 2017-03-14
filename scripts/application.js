@@ -1,4 +1,4 @@
-var CONST_TIME_PROC_INTERRUPT = 3000;
+var CONST_TIME_PROC_INTERRUPT = 300;
 var CONST_TIME_PROC_DELAY = 1000;			// время задержки циклов внутри процесса
 var DEAD = -1;
 var INIT = 0;
@@ -11,19 +11,14 @@ var EngineCon = new ConsoleEngine();
 var EngineDB = new DBEngine();
 var EngineWeb = new WebEngine();
 
+var SYNC_SERVER = new SERVICE_SYNC_SERVER();
+var SYNC_CLIENT = new SERVICE_SYNC_CLIENT();
 
 function MainApp(name) {
 	this.constructor = function(name) {
-		let interrupt = function() {
-			 for(var proc_name in Application.task_list) {
-				Application.checkProcess(proc_name);
-				let proc_link = Application.task_list[proc_name];
-				let str = proc_link;
-			}
-			try {
-				//Application.task_list.init();
-			} catch(e) {}
-			setTimeout(interrupt, CONST_TIME_PROC_INTERRUPT);
+		var interrupt = function() {
+			SYNC_SERVER.START();
+			SYNC_CLIENT.START();
 		}
 		EngineCon.log(this, 'ready');
 		this.task_list = {};
@@ -42,9 +37,9 @@ function MainApp(name) {
 		EngineDB.executeSqlSruct(STRUCT_TABLE_EQUIP_CAT, REPLACE, [0, 0, 'af2243bd-e346-11e6-83aa-0016364dcf75', 'биохимические анализаторы'], null, null, DEBUG_DB_CREATE);
 	}
 	this.queueOnline = function() {
-		if(this.stop) { return -1; }
+		/*if(this.stop) { return -1; }
 		Application.runIsDead(PROCESS_SYNC_CLIENT);
-		Application.runIsDead(PROCESS_SYNC_SERVER);
+		Application.runIsDead(PROCESS_SYNC_SERVER);*/
 	}
 	this.checkOnline = function() {
 		var xhr = new XMLHttpRequest();
@@ -70,8 +65,8 @@ function MainApp(name) {
 		return this.online_flag;
 	}
 	this.showTask = function() {
-		let result = 'PID    | process name\n-------+--------------------';
-		for(let process_name in this.task_list)
+		var result = 'PID    | process name\n-------+--------------------';
+		for(var process_name in this.task_list)
 		{
 			result = result + '\n[' + this.task_list[process_name].PID + '] | ' + process_name;
 		}
@@ -88,14 +83,14 @@ function MainApp(name) {
 		}
 		/*if(DEBUG_PROCESS) Application.log(this, process_name+' ['+this.task_list[process_name].PID+'] is not DEAD');
 		if(DEBUG_PROCESS) Application.log('\n'+this.showTask);
-		let sender = this.task_list[process_name];
+		var sender = this.task_list[process_name];
 		setTimeout(function(){sender.watchDog(sender);}, sender.live_time);*/
 		//this.task_list[process_name].alive == false;
 		return INIT;
 	}
 	this.init = function(class_name) {
-		let proc = new class_name();
-		let proc_name = proc.constructor.name;
+		var proc = new class_name();
+		var proc_name = proc.constructor.name;
 		if(this.task_list[proc_name] != undefined) {
 			this.error(this, 'init process error. process name ['+proc_name+'] already exists');
 			return -1;
@@ -106,11 +101,11 @@ function MainApp(name) {
 		this.task_list[proc_name].INIT();
 	}
 	this.run = function(proc_or_class_name, proc_param) {
-		let type_var = typeof proc_or_class_name;
+		var type_var = typeof proc_or_class_name;
 		switch (type_var) {
 			case 'function':
-				let proc = new proc_or_class_name();
-				let proc_name = proc.constructor.name;
+				var proc = new proc_or_class_name();
+				var proc_name = proc.constructor.name;
 				if(this.task_list[proc_name] != undefined) {
 					this.error(this, 'run new process error. process name ['+proc_name+'] already exists. impossible create new');
 					return -665;
@@ -137,8 +132,8 @@ function MainApp(name) {
 		return 0;
 	}
 	this.runIsDead = function(proc_or_class_name, proc_param) {
-		let process_name = '';
-		let type_var = typeof proc_or_class_name;
+		var process_name = '';
+		var type_var = typeof proc_or_class_name;
 		switch (type_var) {
 			case 'function':
 				process_name = proc_or_class_name.name;
@@ -156,7 +151,7 @@ function MainApp(name) {
 	}
 	this.halt = function(proc_or_class_name) {
 		try {
-			let process_name = proc_or_class_name;
+			var process_name = proc_or_class_name;
 			if(typeof proc_or_class_name == 'object') {
 				process_name = proc_or_class_name.name;
 			}
@@ -212,7 +207,7 @@ var Application = new MainApp();
 
 
 
-//let proc = new PROCESS_SYNC('ddd');
+//var proc = new PROCESS_SYNC('ddd');
 //delete proc;
 
 //Application.run(PROCESS_SYNC);

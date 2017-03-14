@@ -1,35 +1,82 @@
 <html>
 <head>
+<meta name="viewport" content="width=device-width">
+<script src="scripts/task_mgr.js"></script>
 <script src="scripts/alasql.min.js"></script>
 <script src="scripts/database.js"></script>
 
+
 <script>
 
+function getRandomInt(min, max) {
+	return Math.floor(Math.random() * (max - min)) + min;
+}
 
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
+
+function initTest() {
+	alasql('CREATE LOCALSTORAGE DATABASE IF NOT EXISTS geo;\
+		ATTACH LOCALSTORAGE DATABASE geo; \
+		USE geo');//; \
+		/*DROP TABLE IF EXISTS cities; \
+		CREATE TABLE cities (city STRING, population INT)'); */
+	alasql.options.cache = false;
+}
+
+function recreateDB() {
+	alasql('DROP TABLE IF EXISTS cities');
+	alasql('CREATE TABLE cities (city STRING, population INT)');
+}
+
+function addRecord() {
+	alasql('INSERT INTO cities VALUES ("'+guid()+'", '+getRandomInt(100, 1000)+')');
+
+}
+
+function getCount() {
+	var count = alasql('SELECT COUNT(1) FROM cities')[0];
+	document.getElementById('count').innerHTML = count['COUNT(1)'];
+	//setTimeout(getCount, 1000);
+}
+
+function fillRecords() {
+	for(var i = 0; i < 1000; i++) {
+		TASK_MANAGER.addTask(function() { addRecord(); }, ULTRA, false);
+		//setTimeout(addRecord, 10);
+	}
+	document.getElementById('count').innerHTML = 'record full';
+}
+
+function getRecords() {
+	var records = alasql('SELECT COLUMN city FROM cities WHERE city LIKE "%c%" AND population BETWEEN 10 AND 99999 ORDER BY population LIMIT 100');
+	document.getElementById('record').innerHTML = records.join(', ');
+}
+
+function testWrite(result) {
+	var output = document.getElementById('record');
+	var count = document.getElementById('count');
+	var pr_bar = new progressBar(125, testPerformanceFastInsert, function(tmp) { output.innerHTML = tmp+' ms.'; }, function(tmp) { count.innerHTML = tmp+'%'; });
+	pr_bar.run();
+	//output.innerHTML = 'speed write record: '+result+' ms.';
+}
 
 window.onload = function() {
 	initDataBase();
-	document.write(sqlQueryCountFromServerTransact(SQL.TABLE_USERS));
+	var output = document.getElementById('record');
+	output.append = function(text) {
+		output.appendChild(document.createTextNode(text));
+	}
 
+	//TASK_MANAGER.addTask(function() { output.append('1 '); console.timeEnd('MEDIUM task1'); console.time('MEDIUM task1'); }, MEDIUM, true);
 
-	/*var cityData = [{city:"Redmond", population:57530},
-		{city:"Atlanta",population:447841},
-		{city:"San Fracisco", population:837442}];
-
-		// Create IndexdDB database and fill it with data from array
-	    alasql('CREATE LOCALSTORAGE DATABASE IF NOT EXISTS geo;\
-		    ATTACH LOCALSTORAGE DATABASE geo; \
-		    USE geo; \
-		    DROP TABLE IF EXISTS cities; \
-		    CREATE TABLE cities; \
-		    SELECT * INTO cities FROM ?', [cityData], function(){
-
-		    // Select data from IndexedDB
-	    	alasql('SELECT COLUMN * FROM cities WHERE city LIKE "%O%"',
-	    		[],function(res){
-	    			document.getElementById('res').textContent = res.join(', ');
-	    	});
-	    });*/
 
 }
 
@@ -37,6 +84,13 @@ window.onload = function() {
 </script>
 </head>
 <body>
-<p>Big cities:<span id="res"></span></p>
+<p>Big cities:<span id="res"></span></p></br>
+<a href='#' onclick="recreateDB(); return false">recreate DB</a></br></br></br></br>
+<a href='#' onclick="fillRecords(); return false">fill records</a></br></br></br></br>
+<a href='#' onclick="getCount(); return false">get count</a>
+<p>Count:<span id="count"></span></p></br></br></br></br>
+<a href='#' onclick="getRecords(); return false">get record</a></br></br></br></br>
+<p>record:<span id="record"></span></p></br></br></br></br>
+<a href='#' onclick="testWrite(); return false">test Performance</a></br></br></br></br>
 </body>
 </html>
