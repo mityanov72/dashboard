@@ -3,20 +3,22 @@
 
 <meta charset="utf-8">
 <script src="scripts/debug.js"></script>
-<script src="scripts/math.js"></script>
+<script> document.write('<br><br><br><br> 1') </script>
+<script src="scripts/math.js1"></script>
 <script src="scripts/classes1.js"></script>
-<script src="scripts/service.js"></script>
-<script src="scripts/engine_db.js"></script>
-<script src="scripts/engine_console.js"></script>
-<script src="scripts/engine_web.js"></script>
-<script src="scripts/application.js"></script>
-<script src="scripts/tables.js"></script>
-<script src="scripts/menu.js"></script>
-<script src="scripts/controls.js"></script>
+<script src="scripts/service.js1"></script>
+<script src="scripts/engine_db.js1"></script>
+<script src="scripts/engine_console.js1"></script>
+<script src="scripts/engine_web.js1"></script>
+<script src="scripts/application.js1"></script>
+<script src="scripts/tables.js1"></script>
+<script src="scripts/menu.js1"></script>
+<script src="scripts/controls.js1"></script>
+<script> document.write(' 2') </script>
 
-<script src="scripts/pages/page_main.js"></script>
-<script src="scripts/pages/page_equipment.js"></script>
-<script src="scripts/pages/page_customer.js"></script>
+<script src="scripts/pages/page_main.js1"></script>
+<script src="scripts/pages/page_equipment.js1"></script>
+<script src="scripts/pages/page_customer.js1"></script>
 
 <link href="css/style.css" rel="stylesheet">
 <link href="css/tables.css" rel="stylesheet">
@@ -24,7 +26,16 @@
 <link href="css/menu.css" rel="stylesheet">
 <link href="css/controls.css" rel="stylesheet">
 
+<script> document.write(' 3') </script>
 <script>
+
+
+
+
+
+
+document.write('4');
+
 
 var PAGE;
 var FLOAT_TABLE_BUTTON;
@@ -82,57 +93,85 @@ var PAGE_MAIN;
 var MENU;
 
 window.onload = function() {
-	FLOAT_TABLE_BUTTON 				= window.document.getElementById('float_table_button');
-	PAGE							= window.document.getElementById('mainPage');
-	MENU							= window.document.getElementById('top_menu');
+	document.write('5');
+	FLOAT_TABLE_BUTTON				= document.getElementById('float_table_button');
+	PAGE							= document.getElementById('mainPage');
+	MENU							= document.getElementById('top_menu');
 	
-	DIV_FINDER						= window.document.getElementById('div_finder');
-	DIV_MAIN_PAGE					= window.document.getElementById('div_main_page');
-	DIV_POPUP_EDIT_EQUIPMENT		= window.document.getElementById('div_popup_edit_equipment');
-	DIV_POPUP_EDIT_CUSTOMER			= window.document.getElementById('div_popup_edit_customer');
-	DIV_POPUP_EDIT_CONTRACT			= window.document.getElementById('div_popup_edit_contract');
-	DIV_POPUP_ADD_CUSTOMER_EQUIPMENT	= window.document.getElementById('div_popup_add_customer_equipment');
-	DIV_POPUP_EDIT_CUSTOMER_EQUIPMENT	= window.document.getElementById('div_popup_edit_customer_equipment');
-	DIV_PAGE_EQUIPMENT				= window.document.getElementById('div_page_equipment');
-	DIV_PAGE_CUSTOMER				= window.document.getElementById('div_page_customer');
-	DIV_PAGE_CONTRACT				= window.document.getElementById('div_page_contract');
-	DIV_PAGE_CUSTOMER_DESCRIPTION	= window.document.getElementById('div_page_customer_description');
-	TABLE_EQUIPMENT					= window.document.getElementById('table_equipment');
-	TABLE_CUSTOMER					= window.document.getElementById('table_customer');
-	TABLE_CONTRACT					= window.document.getElementById('table_contract');
-	TABLE_CUSTOMER_EQUIPMENT		= window.document.getElementById('table_customer_equipment');
-	TABLE_CUSTOMER_EQUIPMENT_SEARCH	= window.document.getElementById('table_customer_equipment_search');
-	SELECT_EQUIPMENT_CATEGORY		= window.document.getElementById('select_equipment_category');
-	INPUT_SEARCH					= window.document.getElementById('input_search');
-	INPUT_SEARCH_EQUIPMENT			= window.document.getElementById('input_search_equipment');
-	INPUT_EQUIPMENT_TITLE			= window.document.getElementById('input_equipment_title');
-	INPUT_EQUIPMENT_MODEL			= window.document.getElementById('input_equipment_model');
-	INPUT_EQUIPMENT_MANUFACTURER	= window.document.getElementById('input_equipment_manufacturer');
-	INPUT_CUSTOMER_TITLE			= window.document.getElementById('input_customer_title');
-	INPUT_CUSTOMER_TOWN				= window.document.getElementById('input_customer_town');
-	INPUT_CUSTOMER_EDIT_EQUIP_SERIAL	= window.document.getElementById('input_customer_edit_equipment_serial');
-	INPUT_CUSTOMER_EDIT_EQUIP_INVENT	= window.document.getElementById('input_customer_edit_equipment_inven');
-	INPUT_CUSTOMER_EDIT_EQUIP_DATE		= window.document.getElementById('input_customer_edit_equipment_date');
-	INPUT_CUSTOMER_EDIT_EQUIP_GUID		= window.document.getElementById('input_customer_edit_equipment_GUID');
-	INPUT_CONTRACT_GUID				= window.document.getElementById('input_contract_GUID');
-	INPUT_CONTRACT_CUSTOMER_GUID	= window.document.getElementById('input_contract_customer_GUID');
-	INPUT_CONTRACT_DESCRIPTION		= window.document.getElementById('input_contract_description');
-	P_SEARCH_DESCRIPTION			= window.document.getElementById('p_search_description');
-	P_CUSTOMER_TITLE_DESCR			= window.document.getElementById('customer_title_descr');
-	P_CUSTOMER_TOWN_DESCR			= window.document.getElementById('customer_town_descr');
-	P_CUSTOMER_EDIT_EQUIP_TITLE		= window.document.getElementById('p_customer_edit_equipment_title');
-	P_CONTRACT_CUSTOMER_TITLE		= window.document.getElementById('p_contract_customer_title');
-	BUTTON_FINDER_ADD				= window.document.getElementById('button_finder_add');
+	DIV_FINDER						= document.getElementById('div_finder');
+	DIV_MAIN_PAGE					= document.getElementById('div_main_page');
+	DIV_POPUP_EDIT_EQUIPMENT		= document.getElementById('div_popup_edit_equipment');
+	DIV_POPUP_EDIT_CUSTOMER			= document.getElementById('div_popup_edit_customer');
+	DIV_POPUP_EDIT_CONTRACT			= document.getElementById('div_popup_edit_contract');
+	DIV_POPUP_ADD_CUSTOMER_EQUIPMENT	= document.getElementById('div_popup_add_customer_equipment');
+	DIV_POPUP_EDIT_CUSTOMER_EQUIPMENT	= document.getElementById('div_popup_edit_customer_equipment');
+	DIV_PAGE_EQUIPMENT				= document.getElementById('div_page_equipment');
+	DIV_PAGE_CUSTOMER				= document.getElementById('div_page_customer');
+	DIV_PAGE_CONTRACT				= document.getElementById('div_page_contract');
+	DIV_PAGE_CUSTOMER_DESCRIPTION	= document.getElementById('div_page_customer_description');
+	TABLE_EQUIPMENT					= document.getElementById('table_equipment');
+	TABLE_CUSTOMER					= document.getElementById('table_customer');
+	TABLE_CONTRACT					= document.getElementById('table_contract');
+	TABLE_CUSTOMER_EQUIPMENT		= document.getElementById('table_customer_equipment');
+	TABLE_CUSTOMER_EQUIPMENT_SEARCH	= document.getElementById('table_customer_equipment_search');
+	SELECT_EQUIPMENT_CATEGORY		= document.getElementById('select_equipment_category');
+	INPUT_SEARCH					= document.getElementById('input_search');
+	INPUT_SEARCH_EQUIPMENT			= document.getElementById('input_search_equipment');
+	INPUT_EQUIPMENT_TITLE			= document.getElementById('input_equipment_title');
+	INPUT_EQUIPMENT_MODEL			= document.getElementById('input_equipment_model');
+	INPUT_EQUIPMENT_MANUFACTURER	= document.getElementById('input_equipment_manufacturer');
+	INPUT_CUSTOMER_TITLE			= document.getElementById('input_customer_title');
+	INPUT_CUSTOMER_TOWN				= document.getElementById('input_customer_town');
+	INPUT_CUSTOMER_EDIT_EQUIP_SERIAL	= document.getElementById('input_customer_edit_equipment_serial');
+	INPUT_CUSTOMER_EDIT_EQUIP_INVENT	= document.getElementById('input_customer_edit_equipment_inven');
+	INPUT_CUSTOMER_EDIT_EQUIP_DATE		= document.getElementById('input_customer_edit_equipment_date');
+	INPUT_CUSTOMER_EDIT_EQUIP_GUID		= document.getElementById('input_customer_edit_equipment_GUID');
+	INPUT_CONTRACT_GUID				= document.getElementById('input_contract_GUID');
+	INPUT_CONTRACT_CUSTOMER_GUID	= document.getElementById('input_contract_customer_GUID');
+	INPUT_CONTRACT_DESCRIPTION		= document.getElementById('input_contract_description');
+	P_SEARCH_DESCRIPTION			= document.getElementById('p_search_description');
+	P_CUSTOMER_TITLE_DESCR			= document.getElementById('customer_title_descr');
+	P_CUSTOMER_TOWN_DESCR			= document.getElementById('customer_town_descr');
+	P_CUSTOMER_EDIT_EQUIP_TITLE		= document.getElementById('p_customer_edit_equipment_title');
+	P_CONTRACT_CUSTOMER_TITLE		= document.getElementById('p_contract_customer_title');
+	BUTTON_FINDER_ADD				= document.getElementById('button_finder_add');
 
-	FLOAT_TABLE_BUTTON = window.document.getElementById('float_table_button');
-
+	document.write('var ok');
 	hideAll();
+	document.write('hideAll ok');
 	createMenu();
+	document.write('createMenu ok');
 	//showMainPage();
 	//page_main_show();
 	Application.open('PAGE_MAIN');
-	//window.document.write('Application ok');
+	document.write('Application ok');
 	
+	
+	/*window.PAGE_MAIN = new Page('CTR', PAGE, 'PAGE_MAIN');
+	PAGE_MAIN.add(Panel, 'panelFirst');
+	PAGE_MAIN.controls['panelFirst'].add(SearchControl, 'searchControl');
+	
+	PAGE_MAIN.add(Panel, 'panelSecond');
+	PAGE_MAIN.controls['panelSecond'].add(Table, 'mainTable');
+	PAGE_MAIN.controls['panelSecond'].controls['mainTable'].init(HTML_TABLE_CUSTOMER, 'SELECT GUID, title AS customer_title FROM customer WHERE title LIKE ? OR town LIKE ?', ['%', '%'], 
+			'SELECT COUNT(1) FROM customer WHERE title LIKE ? OR town LIKE ?', ['%', '%'], 'table customer', function() { alert('real') });
+	
+	PAGE_MAIN.add(Panel, 'panelThree');
+	PAGE_MAIN.controls['panelThree'].add(Grid, 'grid');
+	PAGE_MAIN.controls['panelThree'].controls['grid'].addRow('description <br>of content', Input, 'input');
+	var btnOk = PAGE_MAIN.controls['panelThree'].controls['grid'].addRow('', Button, 'btnOk');
+	btnOk.setText('ok');
+	
+	/*
+	var panelFirst = PAGE_MAIN.add(Panel, 'panelFirst');
+	var searchControl = panelFirst.add(SearchControl, 'searchControl');
+	
+	var panelSecond = PAGE_MAIN.add(Panel, 'panelSecond');
+	var mainTable = panelSecond.add(Table, 'mainTable');
+	mainTable.init(HTML_TABLE_CUSTOMER, 'SELECT GUID, title AS customer_title FROM customer WHERE title LIKE ? OR town LIKE ?', ['%', '%'], 
+			'SELECT COUNT(1) FROM customer WHERE title LIKE ? OR town LIKE ?', ['%', '%'], 'table customer', function() { alert('real') });
+
+	mainTable.fill();*/
 
 }
 
@@ -206,7 +245,7 @@ function showPageCustomerDescription() {
 	CURRENT_PAGE = showPageCustomerDescription;
 }
 
-function showPopupEditEquipment(is_edit) {
+function showPopupEditEquipment(is_edit = false) {
 	hideSelect();
 	if(is_edit == false) {
 		VAR_EQUIPMENT_GUID = '';
@@ -215,7 +254,7 @@ function showPopupEditEquipment(is_edit) {
 	fillEquipmentFields(false);
 }
 
-function showPopupContract(is_edit) {
+function showPopupContract(is_edit = false) {
 	hideSelect();
 	if(is_edit == false) {
 		VAR_CONTRACT_GUID = '';
@@ -439,7 +478,7 @@ function fillCustomerEquipmentTable(customer_GUID) {
 			'SELECT COUNT(1) FROM customer_equipment, equipment WHERE customer_equipment.equipment_GUID = equipment.GUID AND customer_GUID = ?', [customer_GUID]);
 }
 
-function fillEquipmentFields(is_edit) {
+function fillEquipmentFields(is_edit = false) {
 	function fillEquipmentCategory() {
 		fillSelect(SELECT_EQUIPMENT_CATEGORY, HTML_TABLE_EQUIPMENT_CAT, 'SELECT GUID, title AS category_title FROM equipment_category', [], 'SELECT COUNT(1) FROM equipment_category', []);
 	}
@@ -464,14 +503,14 @@ function hideAll() {
 	FLOAT_TABLE_BUTTON.style.display			= 'none';
 	DIV_MAIN_PAGE.style.display					= 'none';
 	DIV_FINDER.style.display					= 'none';
-	DIV_POPUP_EDIT_EQUIPMENT.style.display		= 'none';
+	DIV_POPUP_EDIT_EQUIPMENT.style.display	= 'none';
 	DIV_POPUP_EDIT_CUSTOMER.style.display		= 'none';
 	DIV_POPUP_ADD_CUSTOMER_EQUIPMENT.style.display	= 'none';
 	DIV_POPUP_EDIT_CUSTOMER_EQUIPMENT.style.display	= 'none';
 	DIV_PAGE_EQUIPMENT.style.display			= 'none';
-	DIV_PAGE_CUSTOMER.style.display				= 'none';
-	DIV_PAGE_CONTRACT.style.display				= 'none';
-	DIV_PAGE_CUSTOMER_DESCRIPTION.style.display	= 'none';
+	DIV_PAGE_CUSTOMER.style.display			= 'none';
+	DIV_PAGE_CONTRACT.style.display			= 'none';
+	DIV_PAGE_CUSTOMER_DESCRIPTION.style.display		= 'none';
 }
 function show(element) {
 	element.style.display = 'block';

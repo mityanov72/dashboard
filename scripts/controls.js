@@ -13,8 +13,8 @@ function Control(name) {
 		aName = aName || '';
 		this.controls[aName] = new aControl(aName);
 		if(aName == '') {
-			let i = 0;
-			let tmpName = this.controls[aName].element.className+'_'+i;
+			var i = 0;
+			var tmpName = this.controls[aName].element.className+'_'+i;
 			while(this.controls[tmpName] !== undefined) {
 				i++;
 				tmpName = this.controls[aName].element.className+'_'+i;
@@ -43,9 +43,9 @@ function Control(name) {
 		return this.controls;
 	}
 	this.findControl = function(aName) {
-		let current_control = this.getControl(aName);
+		var current_control = this.getControl(aName);
 		if(current_control == undefined) {
-			for(let childControl in this.controls)
+			for(var childControl in this.controls)
 			{
 				if(this.controls[childControl].visual_control == true) {
 					current_control = this.controls[childControl].getControl(aName);
@@ -76,15 +76,15 @@ function Page(name, div, var_name) {
 		//div.appendChild(this.element);
 	}
 	this.putControl = function(aControl) {
-		let exec_string = 'this.control_list.control_'+this.control_count+' = aControl';
+		var exec_string = 'this.control_list.control_'+this.control_count+' = aControl';
 		eval(exec_string);
 		exec_string = 'this.control_list.control_'+this.control_count+'.element.id = "ctrl_'+this.control_count+'"';
 		eval(exec_string);
 		this.control_count++;
 	}
 	this.findControl = function(id) {
-		let id_num = id.substr(5);
-		let exec_string = 'this.control_list.control_'+id_num;
+		var id_num = id.substr(5);
+		var exec_string = 'this.control_list.control_'+id_num;
 		return eval(exec_string);
 	}
 	this.constructor(name, div, var_name);
@@ -150,7 +150,7 @@ function Select(name) {
 	}
 	this.addOption = function(value, GUID) {
 		this.element.options[this.element.options.length] = new Option(value, GUID);
-		let newOption = this.element.options[this.element.options.length];
+		var newOption = this.element.options[this.element.options.length];
 	}
 	this.getValue = function() {
 		if(this.element.selectedIndex < 0) return undefined;
@@ -160,8 +160,8 @@ function Select(name) {
 		this.element.style.width = value;
 	}
 	this.setSelect = function(GUID) {
-		for(let i = 0; i < this.element.options.length; i++) {
-			let option = this.element.options[i];
+		for(var i = 0; i < this.element.options.length; i++) {
+			var option = this.element.options[i];
 			if(option.value == GUID) {
 				this.element.selectedIndex = i;
 			}
@@ -176,9 +176,9 @@ function Select(name) {
 		this.fill();
 	}
 	this.fill = function() {
-		let callbackGetRowCount = function(error_level, objResult, [sender]) {
-			let callbackGetRecord = function(error_level, objResult, [sender]) {
-				for(let i=0; i < sender.record_count; i++) {
+		var callbackGetRowCount = function(error_level, objResult, [sender]) {
+			var callbackGetRecord = function(error_level, objResult, [sender]) {
+				for(var i=0; i < sender.record_count; i++) {
 					setTimeout(function() {sender.addOption(objResult[i].value, objResult[i].GUID)}, DELAY_ADD_RECORD*i);
 					//setTimeout(function() {addOptionInSelect(select_pointer, table_struct, objResult[i].category_title, objResult[i].GUID)}, DELAY_ADD_RECORD*i);
 				}
@@ -208,7 +208,7 @@ function Button(name) {
 	}
 	this.setClick = function(link) {
 		this.element.href = '#';
-		this.element.onclick = link;
+		this.element.onclick = function() { link(); return false; };
 	}
 	this.setWidth = function(value) {
 		this.element.style.width = value;
@@ -289,9 +289,9 @@ function Table(name) {
 		this.fill();
 	}
 	this.addRow = function(json_row) {
-		let rowOnclick = function() {
-			let showButton = function(sender, parentTable) {
-				let point = getCoords(sender);
+		var rowOnclick = function() {
+			var showButton = function(sender, parentTable) {
+				var point = getCoords(sender);
 				parentTable.element.parentNode.appendChild(FLOAT_TABLE_BUTTON);
 				FLOAT_TABLE_BUTTON.style.top = point.top;
 				FLOAT_TABLE_BUTTON.style.left = point.left + sender.offsetWidth - 50;
@@ -300,10 +300,10 @@ function Table(name) {
 				FLOAT_TABLE_BUTTON.onclick = function() { parentTable.onclick(sender) };	//parentTable.onclick; //function() { alert(sender); parentTable.onclick() };//function() { parentTable.onclick(sender) };
 				FLOAT_TABLE_BUTTON.style.display = 'block';
 			}
-			let parentTable = this.parentNode.parentNode;
-			let page_name = parentTable.getAttribute('data-pagename');
-			let table_name = parentTable.getAttribute('data-tablename');
-			let page;
+			var parentTable = this.parentNode.parentNode;
+			var page_name = parentTable.getAttribute('data-pagename');
+			var table_name = parentTable.getAttribute('data-tablename');
+			var page;
 			eval('page = '+page_name);
 			parentTable = page.findControl(parentTable.id);
 			//parentTable = page.findControl(table_name);
@@ -311,17 +311,17 @@ function Table(name) {
 			//eval('showButton(this, parentTable, '+parentTable.onclick+')');
 		}
 		
-		let newRow = this.element.tBodies[0].insertRow(-1);
+		var newRow = this.element.tBodies[0].insertRow(-1);
 		newRow.onclick = rowOnclick;
-		for(let i=0; i < this.struct.column_count; i++) {
-			let struct_column = eval('this.struct.column'+i);
-			let newCell = newRow.insertCell(-1);
+		for(var i=0; i < this.struct.column_count; i++) {
+			var struct_column = eval('this.struct.column'+i);
+			var newCell = newRow.insertCell(-1);
 			newCell.align = struct_column.align;
 			newCell.width = struct_column.width;
 			if(struct_column.visible == false) {
 				newCell.style = "display: none";
 			}
-			let value = eval('json_row.'+struct_column.name);
+			var value = eval('json_row.'+struct_column.name);
 			newCell.innerHTML = value;
 			//newCell.title = value;
 			newCell.setAttribute('data-name', struct_column.name);
@@ -329,13 +329,13 @@ function Table(name) {
 	}
 
 	this.fill = function() {
-		let callbackGetRowCount = function(error_level, objResult, [sender]) {
-			let callbackGetRecord = function(error_level, objResult, [record_count, table_pointer, table_struct]) {
-				for(let i=0; i < record_count; i++) {
+		var callbackGetRowCount = function(error_level, objResult, [sender]) {
+			var callbackGetRecord = function(error_level, objResult, [record_count, table_pointer, table_struct]) {
+				for(var i=0; i < record_count; i++) {
 					setTimeout(function() {sender.addRow(objResult[i])}, DELAY_ADD_RECORD*i);
 				}
 			}
-			let record_count = getOnceObjectProper(objResult);
+			var record_count = getOnceObjectProper(objResult);
 			record_count = getOnceObjectProper(record_count);
 			EngineDB.executeSql(sender.query_string, sender.qyery_param, callbackGetRecord, [record_count, sender, sender.table_struct], true);
 			
@@ -344,7 +344,7 @@ function Table(name) {
 		EngineDB.executeSql(this.query_string_count, this.qyery_param_count, callbackGetRowCount, [this], true);
 	}
 	this.clear = function() {
-		for(let i = 0; i < this.element.parentNode.childNodes.length; i++) {
+		for(var i = 0; i < this.element.parentNode.childNodes.length; i++) {
 			if(this.element.parentNode.childNodes[i] == FLOAT_TABLE_BUTTON) {
 				FLOAT_TABLE_BUTTON.style.display = 'none';
 			}
@@ -363,8 +363,8 @@ function Grid(name) {
 		this.table_body = this.element.appendChild(document.createElement('tbody'));
 	}
 	this.addRow = function(description, aControl, aName) {
-		let newRow = this.element.tBodies[0].insertRow(-1);
-		let newCell = newRow.insertCell(-1);
+		var newRow = this.element.tBodies[0].insertRow(-1);
+		var newCell = newRow.insertCell(-1);
 		newCell.innerHTML = description;
 		newCell = newRow.insertCell(-1);
 		var childControl = this.add(aControl, aName);
@@ -392,8 +392,8 @@ function Popup(name) {
 }
 
 function getTrFieldValue(sender, name) {
-	for(let i=0; i < sender.childNodes.length; i++) {
-		let cell_current = sender.childNodes[i];
+	for(var i=0; i < sender.childNodes.length; i++) {
+		var cell_current = sender.childNodes[i];
 		if(cell_current.getAttribute('data-name') == name) {
 			return cell_current.innerText;
 		}

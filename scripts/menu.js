@@ -9,6 +9,6 @@ function createMenu() {
 }
 
 function setMenuDescription(title) {
-	var div_menu_title = document.getElementById('page_title');
+	var div_menu_title = window.document.getElementById('page_title');
 	div_menu_title.innerHTML = title;
 }

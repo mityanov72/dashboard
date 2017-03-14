@@ -22,13 +22,10 @@ function getCoords(elem) {
 }
 
 function guid() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-    s4() + '-' + s4() + s4() + s4();
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+	}
+	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
 function equal_string(str_array) {
@@ -36,8 +33,8 @@ function equal_string(str_array) {
 }
 
 function count(obj) {
-	let count = 0;
-	for(let prs in obj)
+	var count = 0;
+	for(var prs in obj)
 	{
 		count++;
 	}

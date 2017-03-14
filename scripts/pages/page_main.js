@@ -1,4 +1,5 @@
 var PAGE_MAIN;
+
 Application.registryPage('PAGE_MAIN', 'Main menu', page_main_init, page_main_show);
 
 function page_main_init() {

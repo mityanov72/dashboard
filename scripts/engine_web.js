@@ -63,10 +63,3 @@ function WebEngine(name) {
 	}
 	this.constructor(name);
 }
-
-
-/*
-https://learn.javascript.ru/xhr-forms
-https://learn.javascript.ru/ajax-xmlhttprequest
-
-*/

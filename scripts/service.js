@@ -6,7 +6,6 @@ var CONST_TIME_SERVICE_DELAY = 6000;
 var CONST_TIME_SERVICE_DELAY_NEXT_PUSH = 500;
 
 
-
 function SERVICE(name) {
 	this.status_push = STOP;
 	this.status_pull = STOP;
@@ -30,7 +29,7 @@ function SERVICE_SYNC_SERVER() {
 	this.status_push = IDLE;
 	this.status_pull = IDLE;
 	this.START = function() {
-		let callback = function(sender) {
+		var callback = function(sender) {
 			if(sender.status_push !== RUN) sender.push(); 
 			if(sender.status_pull !== RUN) sender.pull();
 		}
@@ -50,8 +49,8 @@ function SERVICE_SYNC_SERVER() {
 			//==================================================================================================================================================================================//
 			//	resSendRecordOnServer - отправляет единичную запись на сервер, в случае успеха удаляет локальную транзакцию
 			function resSendRecordOnServer(level, JsonResult, param) {	//	[callback_param, sender]
-				let callback_param = param[0] || '';
-				let sender = param[1] || '';
+				var callback_param = param[0] || '';
+				var sender = param[1] || '';
 				function getResult(level, answer, [callback_param, sender]) {
 					if(answer != 'ok') {
 						sender.status_push = IDLE;
@@ -67,7 +66,7 @@ function SERVICE_SYNC_SERVER() {
 					return -1;
 				}
 				sender.status_push = RUN;
-				let source = JsonResult['0'];
+				var source = JsonResult['0'];
 				source['SQL_QUERY_NAME'] = callback_param.query_name;
 				source['SQL_QUERY_TYPE'] = callback_param.query_type;
 				source['SQL_QUERY_TABLE'] = '';
@@ -102,13 +101,13 @@ function SERVICE_SYNC_SERVER() {
 				return -1;
 			}
 			sender.status_pull = RUN;
-			let result = JSON.parse(JsonResult);
+			var result = JSON.parse(JsonResult);
 			if(result.num_rows == 0) {
 				sender.status_pull = IDLE;
 				return 0;
 			}
-			let row;
-			for(let i=0; i < result.num_rows; i++) {
+			var row;
+			for(var i=0; i < result.num_rows; i++) {
 				row = eval('result.row'+i);
 				sender.status_pull = RUN;
 				EngineDB.executeSqlSruct(STRUCT_TABLE_SERVER_TRANSACT, REPLACE, [row.GUID, row.time_update, row.table_name, row.query_type, row.record_GUID], null, [], DEBUG_PROCESS_SYNC_SERVER);
@@ -123,7 +122,7 @@ function SERVICE_SYNC_SERVER() {
 			}
 		};
 		this.status_pull = RUN;
-		let source = {};
+		var source = {};
 		source['SQL_QUERY_NAME'] = 'SQL_SELECT_SERVER_TRANSACT';
 		source['SQL_TIME_UPDATE'] = localStorage['TIME_UPDATE'];
 		source['SQL_QUERY_PAGE'] = query_page;
@@ -135,7 +134,7 @@ function SERVICE_SYNC_CLIENT() {
 	SERVICE.call(this, 'SERVICE_SYNC_CLIENT');
 	this.status = IDLE;
 	this.START = function() {
-		let callback = function(sender) {
+		var callback = function(sender) {
 			if(sender.status !== RUN) sender.lookTables(); 
 		}
 		setInterval(callback, CONST_TIME_SERVICE_DELAY, this);
@@ -147,19 +146,19 @@ function SERVICE_SYNC_CLIENT() {
 	}
 	//	асинхронная функция, перебирает названия таблиц из server_transact
 	this.lookTables = function() {
-		let callback = function(error_level, ObjResult, sender) {
+		var callback = function(error_level, ObjResult, sender) {
 			if(error_level < 0) {
 				this.status = IDLE;
 				return -1;
 			}
-			let record_GUID;
-			let table_name_array = [];
-			for(let i=0; i < ObjResult.length; i++) {
+			var record_GUID;
+			var table_name_array = [];
+			for(var i=0; i < ObjResult.length; i++) {
 				table_name_array[i] = ObjResult[i].table_name;
 			}
-			for(let i=0; i < table_name_array.length; i++) {
+			for(var i=0; i < table_name_array.length; i++) {
 				if(sender.is_kill) return -999;
-				let table_name = table_name_array[i];
+				var table_name = table_name_array[i];
 				setTimeout(function() {sender.syncTable(table_name);}, CONST_TIME_PROC_DELAY);
 			}
 			if(table_name_array.length == 0) this.status = IDLE;
@@ -169,7 +168,7 @@ function SERVICE_SYNC_CLIENT() {
 	}
 	//	getLocalFirstRecord - асинхронная функция, возвращает первую запись из локальной таблицы server_transact по имени таблицы
 	this.getLocalFirstRecord = function(table_name) {
-		let callback = function(error_level, result_array_objects, sender) {
+		var callback = function(error_level, result_array_objects, sender) {
 			if(error_level < 0) {
 				this.status = IDLE;
 				return -1;
@@ -184,20 +183,20 @@ function SERVICE_SYNC_CLIENT() {
 	}
 	//	getServerFirstRecord - асинхронная функция, возвращает одну запись из серверной таблицы по GUID
 	this.getServerFirstRecord = function(table_name, GUID, callback_param) {
-		let source = {};
+		var source = {};
 		source['SQL_QUERY_NAME'] = 'SQL_SELECT_'+table_name.toUpperCase();
 		source['GUID'] = GUID;
 		EngineWeb.transmit(WEB_CLIENT_SYNC, source, this.addRecordFromServer, [this, callback_param]);
 	}
 	//	getLocalRecordCount - НЕ ИСПОЛЬЗУЕТСЯ ПОКА. асинхронная функция, возвращает количество строк в таблице server_transact для указанной таблицы (структуры)
 	this.getLocalRecordCount = function() {
-		let callback = function(error_level, result_array_objects, sender) {
+		var callback = function(error_level, result_array_objects, sender) {
 			if(error_level < 0) {
 				this.status = IDLE;
 				return -1;
 			}
 			try {
-				let res = getOnceObjectProper(result_array_objects[0]);//['COUNT(1)'];
+				var res = getOnceObjectProper(result_array_objects[0]);//['COUNT(1)'];
 				if(sender.callback_function != undefined) sender.callback_function(error_level, res, 0);
 			} catch(e) {
 				EngineCon.catcher(EngineDB, e);
@@ -210,14 +209,14 @@ function SERVICE_SYNC_CLIENT() {
 			this.status = IDLE;
 			return -1;
 		}
-		let funct_next_record = function(error_level, empty, [sender, table_name]) {
+		var funct_next_record = function(error_level, empty, [sender, table_name]) {
 			setTimeout(function() {sender.syncTable(table_name);}, CONST_TIME_PROC_DELAY);
 		}
-		let funct_del_transact = function(error_level, empty, [sender, table_name]) {
+		var funct_del_transact = function(error_level, empty, [sender, table_name]) {
 			EngineDB.executeSqlSruct(STRUCT_TABLE_SERVER_TRANSACT, DELETE, [callback_param[0].GUID], funct_next_record, [sender, table_name], DEBUG_PROCESS_SYNC_CLIENT);
 		}
-		let struct_table = getStructTableFromName(callback_param[0].table_name);
-		let param = getQueryParamFromJson(struct_table, result_array_objects);
+		var struct_table = getStructTableFromName(callback_param[0].table_name);
+		var param = getQueryParamFromJson(struct_table, result_array_objects);
 		EngineDB.executeSqlSruct(struct_table, REPLACE, param, funct_del_transact, [sender, callback_param[0].table_name], DEBUG_PROCESS_SYNC_CLIENT);
 	}
 }

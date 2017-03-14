@@ -5,8 +5,6 @@ var INIT = 0;
 var RUN = 1;
 
 
-
-
 var EngineCon = new ConsoleEngine();
 var EngineDB = new DBEngine();
 var EngineWeb = new WebEngine();
@@ -205,19 +203,3 @@ function MainApp(name) {
 
 var Application = new MainApp();
 
-
-
-//var proc = new PROCESS_SYNC('ddd');
-//delete proc;
-
-//Application.run(PROCESS_SYNC);
-//Application.run('PROCESS_SYNC');
-//Application.registryProcess('PROCESS_SYNC', PROCESS_SYNC);
-
-/*
-Application.execute(PROCESS_SYNC)
-Application.halt(PROCESS_SYNC)
-Application.run(PROCESS_SYNC)
-Application.task[PROCESS_SYNC]
-
-*/

@@ -1,5 +1,3 @@
-
-
 function ConsoleEngine(name) {
 	this.constructor = function(name) {
 		this.log(this, 'ready');
@@ -18,7 +16,7 @@ function ConsoleEngine(name) {
 		}
 	}
 	this.getTime = function() {
-		let now = new Date();
+		var now = new Date();
 		return now.format("yyyy-mm-dd HH:MM:ss L");
 	}
 	this.log = function(sender, message) {
@@ -33,8 +31,3 @@ function ConsoleEngine(name) {
 	}
 	this.constructor(name);
 }
-
-/*
-107 switch не нашел к чему сопоставить
-
-*/

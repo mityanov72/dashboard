@@ -10,7 +10,7 @@ Application.registryPage('PAGE_EQUIPMENT', 'Equipment list', page_equipment_init
 //	Функция для инициализации страницы. Тут строятся все контролы
 function page_equipment_init() {
 	PAGE_EQUIPMENT.add(Panel, 'cPanelTop');
-	let btnAdd = PAGE_EQUIPMENT.controls['cPanelTop'].add(Button, 'cButtonAdd');
+	var btnAdd = PAGE_EQUIPMENT.controls['cPanelTop'].add(Button, 'cButtonAdd');
 	btnAdd.setText('добавить аппарат');
 	btnAdd.setWidth(150);
 	btnAdd.setClick(page_equipment_fill_popup_clear);
@@ -28,8 +28,8 @@ function page_equipment_init() {
 	PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].addRow('title', Input, 'cInputEquipmentTitle');
 	PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].addRow('model', Input, 'cInputEquipmentModel');
 	PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].addRow('manufacturer', Input, 'cInputEquipmentManufacturer');
-	let btnSaveEquipment = PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].addRow('', Button, 'cButtonSaveEquipment');
-	let btnClose = PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].addRow('', Button, 'cButtonClosePopup');
+	var btnSaveEquipment = PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].addRow('', Button, 'cButtonSaveEquipment');
+	var btnClose = PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].addRow('', Button, 'cButtonClosePopup');
 	btnSaveEquipment.setText('save');
 	btnSaveEquipment.setWidth(100);
 	btnSaveEquipment.setClick(page_equipment_close_popup_save);
@@ -46,7 +46,7 @@ function page_equipment_init() {
 //	========================================================================================= //
 //	Функция для заполнения страницы содержимым
 function page_equipment_show() {
-	let search_text = '%'+PAGE_EQUIPMENT.controls['cPanelTop'].controls['cSearchControl'].getValue()+'%';
+	var search_text = '%'+PAGE_EQUIPMENT.controls['cPanelTop'].controls['cSearchControl'].getValue()+'%';
 	PAGE_EQUIPMENT.controls['cPanelMain'].controls['cTableEquipment'].init(HTML_TABLE_EQUIPMENT, 'SELECT GUID, "<p class=\'p_first_table_string\'>" || title || "</p><p class=\'p_second_table_string\'>" || model || "</p>" AS title_model, manufacturer '+
 			'FROM equipment WHERE title LIKE ? OR model LIKE ? ORDER BY title, model', [search_text, search_text], 'SELECT COUNT(1) FROM equipment WHERE title LIKE ? OR model LIKE ?', [search_text, search_text], 'table equipment',  page_equipment_table_click);
 	PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].controls['cSelectCategory'].init(HTML_TABLE_EQUIPMENT_CAT, 'SELECT GUID, title AS value FROM equipment_category',
@@ -62,7 +62,7 @@ function page_equipment_clear() {
 //	========================================================================================= //
 //	Функция для обработки кликов на таблице
 function page_equipment_table_click(sender) {
-	let callbackFunction = function(error_level, result, param) {
+	var callbackFunction = function(error_level, result, param) {
 		result = result[0];
 		PAGE_EQUIPMENT.category_GUID = result['category_GUID'];
 		PAGE_EQUIPMENT.title = result['title'];
