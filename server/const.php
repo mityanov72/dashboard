@@ -17,7 +17,7 @@ $_SERVER_URL = $_SERVER['SERVER_NAME'].':'.$_SERVER_PORT;
 
 $_GLOBAL['DB_NAME'] = 'web';
 $_GLOBAL['DB_TABLE_PREFIX'] = '';
-$_GLOBAL['DB_RECORD_LIMIT'] = 1;
+$_GLOBAL['DB_RECORD_LIMIT'] = 20;
 
 
 function getGUID(){

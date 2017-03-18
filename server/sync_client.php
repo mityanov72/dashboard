@@ -47,7 +47,7 @@ if(isset($_POST['SQL_QUERY_NAME'])) {
 	} else {
 		$GUID = htmlspecialchars($_POST['GUID']);
 	}
-	$page = $_GLOBAL['DB_RECORD_LIMIT'] * htmlspecialchars($_POST['SQL_QUERY_PAGE']) -1;
+	$page = $_GLOBAL['DB_RECORD_LIMIT'] * htmlspecialchars($_POST['SQL_QUERY_PAGE']);
 	switch($_POST['SQL_QUERY_NAME']) {
 		case 'SQL_SELECT_SERVER_TRANSACT':
 			$query_sring = "SELECT * FROM server_transact WHERE time_update > STR_TO_DATE('".$time_update."', '%Y-%m-%d %H:%i:%s') ORDER BY time_update, GUID DESC LIMIT ".$page.", ".$_GLOBAL['DB_RECORD_LIMIT'];
@@ -74,7 +74,7 @@ if(isset($_POST['SQL_QUERY_NAME'])) {
 	} else {
 		$result_array[0] = 1;
 	}
-	getJsonFromSQL($query_sring, $_POST['SQL_QUERY_PAGE'], $result_array[0]);
+	getJsonFromSQL($query_sring, $_POST['SQL_QUERY_PAGE'], ceil($result_array[0] / $_GLOBAL['DB_RECORD_LIMIT']));
 }
 
 //========================================================================================================================================================//

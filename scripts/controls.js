@@ -73,6 +73,7 @@ function Page(name, div, var_name) {
 		this.control_list = {};
 		this.control_count = 0;
 		this.is_init = false;
+		this.is_prepare = false;
 		//div.appendChild(this.element);
 	}
 	this.putControl = function(aControl) {
@@ -176,20 +177,24 @@ function Select(name) {
 		this.fill();
 	}
 	this.fill = function() {
-		var callbackGetRowCount = function(error_level, objResult, [sender]) {
-			var callbackGetRecord = function(error_level, objResult, [sender]) {
-				for(var i=0; i < sender.record_count; i++) {
-					setTimeout(function() {sender.addOption(objResult[i].value, objResult[i].GUID)}, DELAY_ADD_RECORD*i);
+		var callbackGetRowCount = function(result) {
+			var callbackGetRecord = function(result) {
+				for(var i=0; i < this.record_count; i++) {
+					TASK_MANAGER.addTask(this.addOption.bind(this, result[i].value, result[i].GUID));
+					//setTimeout(function() {sender.addOption(objResult[i].value, objResult[i].GUID)}, DELAY_ADD_RECORD*i);
 					//setTimeout(function() {addOptionInSelect(select_pointer, table_struct, objResult[i].category_title, objResult[i].GUID)}, DELAY_ADD_RECORD*i);
 				}
 			}
-			sender.record_count = getOnceObjectProper(objResult);
-			sender.record_count = getOnceObjectProper(sender.record_count);
-			EngineDB.executeSql(sender.query_string, sender.qyery_param, callbackGetRecord, [sender], true);
+			this.record_count = getOnceObjectProper(result);
+			this.record_count = getOnceObjectProper(this.record_count);
+			//this.query_string = 'SELECT [GUID], [title] AS [value] FROM equipment_category';
+			var tmp = alasql(this.query_string, this.qyery_param, callbackGetRecord.bind(this));
+			//EngineDB.executeSql(sender.query_string, sender.qyery_param, callbackGetRecord, sender, true);
 			
 		}
 		this.element.options.length = 0;
-		EngineDB.executeSql(this.query_string_count, this.qyery_param_count, callbackGetRowCount, [this], true);
+		alasql(this.query_string_count, this.qyery_param_count, callbackGetRowCount.bind(this));
+		//EngineDB.executeSql(this.query_string_count, this.qyery_param_count, callbackGetRowCount, this, true);
 	}
 	this.constructor(name);
 }
@@ -315,33 +320,37 @@ function Table(name) {
 		newRow.onclick = rowOnclick;
 		for(var i=0; i < this.struct.column_count; i++) {
 			var struct_column = eval('this.struct.column'+i);
-			var newCell = newRow.insertCell(-1);
-			newCell.align = struct_column.align;
-			newCell.width = struct_column.width;
-			if(struct_column.visible == false) {
-				newCell.style = "display: none";
-			}
 			var value = eval('json_row.'+struct_column.name);
-			newCell.innerHTML = value;
-			//newCell.title = value;
-			newCell.setAttribute('data-name', struct_column.name);
+			if(struct_column.name == 'GUID') {
+				newRow.setAttribute('data-GUID', value);
+				//newCell.style = "display: none";
+			} else {
+				var newCell = newRow.insertCell(-1);
+				newCell.align = struct_column.align;
+				newCell.width = struct_column.width;
+				newCell.innerHTML = value;
+				newCell.setAttribute('data-name', struct_column.name);
+			}
 		}
 	}
 
 	this.fill = function() {
-		var callbackGetRowCount = function(error_level, objResult, [sender]) {
-			var callbackGetRecord = function(error_level, objResult, [record_count, table_pointer, table_struct]) {
+		var callbackGetRowCount = function(result, error_level, objResult) {
+			var callbackGetRecord = function(record_count, table_struct, result) {
 				for(var i=0; i < record_count; i++) {
-					setTimeout(function() {sender.addRow(objResult[i])}, DELAY_ADD_RECORD*i);
+					TASK_MANAGER.addTask(this.addRow.bind(this, result[i]));
+					//setTimeout(function() {sender.addRow(objResult[i])}, DELAY_ADD_RECORD*i);
 				}
 			}
-			var record_count = getOnceObjectProper(objResult);
+			var record_count = getOnceObjectProper(result);
 			record_count = getOnceObjectProper(record_count);
-			EngineDB.executeSql(sender.query_string, sender.qyery_param, callbackGetRecord, [record_count, sender, sender.table_struct], true);
+			alasql(this.query_string, this.qyery_param, callbackGetRecord.bind(this, record_count, this.struct));
+			//EngineDB.executeSql(sender.query_string, sender.qyery_param, callbackGetRecord, [record_count, sender, sender.table_struct], true);
 			
 		}
 		this.clear();
-		EngineDB.executeSql(this.query_string_count, this.qyery_param_count, callbackGetRowCount, [this], true);
+		alasql(this.query_string_count, this.qyery_param_count, callbackGetRowCount.bind(this));
+		//EngineDB.executeSql(this.query_string_count, this.qyery_param_count, callbackGetRowCount, [this], true);
 	}
 	this.clear = function() {
 		for(var i = 0; i < this.element.parentNode.childNodes.length; i++) {
@@ -399,6 +408,10 @@ function getTrFieldValue(sender, name) {
 		}
 	}
 	return undefined;
+}
+
+function getTrGUID(sender) {
+	return sender.getAttribute('data-GUID');
 }
 
 

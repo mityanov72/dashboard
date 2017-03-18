@@ -2,7 +2,7 @@
 header('Access-Control-Allow-Origin: *');
 define( '_EXEC', 1);
 include_once 'const.php';
-require_once '../../connection.php';
+require_once './../../connection.php';
 
 function issetPostEmpty($value) {
 	if(isset($_POST[$value])) {
@@ -20,7 +20,7 @@ if(isset($_POST['SQL_QUERY_NAME'])) {
 		$is_delete = 1;
 	}
 	switch($_POST['SQL_QUERY_NAME']) {
-		case 'STRUCT_TABLE_CHAT':
+		case 'TABLE_CHAT':
 		$descr = issetPostEmpty('descr');
 		$query_sring = 
 			"REPLACE INTO ".$_GLOBAL['DB_TABLE_PREFIX']."chat (is_delete, time_update, GUID, descr) ".
@@ -29,7 +29,7 @@ if(isset($_POST['SQL_QUERY_NAME'])) {
 		$table_name = 'chat';
 		break;
 		
-		case 'STRUCT_TABLE_CUSTOMER':
+		case 'TABLE_CUSTOMER':
 		$title = issetPostEmpty('title');
 		$address = issetPostEmpty('address');
 		$town = issetPostEmpty('town');
@@ -40,7 +40,7 @@ if(isset($_POST['SQL_QUERY_NAME'])) {
 		$table_name = 'customer';
 		break;
 		
-		case 'STRUCT_TABLE_EQUIPMENT':
+		case 'TABLE_EQUIPMENT':
 		$category_GUID = issetPostEmpty('category_GUID');
 		$title = issetPostEmpty('title');
 		$model = issetPostEmpty('model');
@@ -52,7 +52,7 @@ if(isset($_POST['SQL_QUERY_NAME'])) {
 		$table_name = 'equipment';
 		break;
 		
-		case 'STRUCT_TABLE_CUSTOMER_EQUIPMENT':
+		case 'TABLE_CUSTOMER_EQUIPMENT':
 		$QR_string = issetPostEmpty('QR_string');
 		$customer_GUID = issetPostEmpty('customer_GUID');
 		$equipment_GUID = issetPostEmpty('equipment_GUID');

@@ -48,8 +48,8 @@ function page_equipment_init() {
 function page_equipment_show() {
 	var search_text = '%'+PAGE_EQUIPMENT.controls['cPanelTop'].controls['cSearchControl'].getValue()+'%';
 	PAGE_EQUIPMENT.controls['cPanelMain'].controls['cTableEquipment'].init(HTML_TABLE_EQUIPMENT, 'SELECT GUID, "<p class=\'p_first_table_string\'>" || title || "</p><p class=\'p_second_table_string\'>" || model || "</p>" AS title_model, manufacturer '+
-			'FROM equipment WHERE title LIKE ? OR model LIKE ? ORDER BY title, model', [search_text, search_text], 'SELECT COUNT(1) FROM equipment WHERE title LIKE ? OR model LIKE ?', [search_text, search_text], 'table equipment',  page_equipment_table_click);
-	PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].controls['cSelectCategory'].init(HTML_TABLE_EQUIPMENT_CAT, 'SELECT GUID, title AS value FROM equipment_category',
+			'FROM equipment WHERE title LIKE ? OR model LIKE ? ORDER BY title, model', [search_text, search_text], 'SELECT COUNT(1) FROM equipment WHERE title LIKE ? OR model LIKE ?', [search_text, search_text], 'каталог оборудования',  page_equipment_table_click);
+	PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].controls['cSelectCategory'].init(HTML_TABLE_EQUIPMENT_CAT, 'SELECT [GUID], [title] AS [value] FROM equipment_category',
 			[], 'SELECT COUNT(1) FROM equipment_category', []);
 }
 
@@ -62,7 +62,7 @@ function page_equipment_clear() {
 //	========================================================================================= //
 //	Функция для обработки кликов на таблице
 function page_equipment_table_click(sender) {
-	var callbackFunction = function(error_level, result, param) {
+	var callbackFunction = function(result) {
 		result = result[0];
 		PAGE_EQUIPMENT.category_GUID = result['category_GUID'];
 		PAGE_EQUIPMENT.title = result['title'];
@@ -71,8 +71,9 @@ function page_equipment_table_click(sender) {
 		page_equipment_show_popup();
 		page_equipment_fill_popup(PAGE_EQUIPMENT.category_GUID, PAGE_EQUIPMENT.title, PAGE_EQUIPMENT.model, PAGE_EQUIPMENT.manufacturer);		
 	}
-	PAGE_EQUIPMENT.equipment_GUID = getTrFieldValue(sender, 'GUID');
-	EngineDB.executeSql('SELECT category_GUID, title, model, manufacturer FROM equipment WHERE GUID = ?', [PAGE_EQUIPMENT.equipment_GUID], callbackFunction, [], true);
+	PAGE_EQUIPMENT.equipment_GUID = getTrGUID(sender);
+	alasql('SELECT category_GUID, title, model, manufacturer FROM equipment WHERE GUID = ?', [PAGE_EQUIPMENT.equipment_GUID], callbackFunction);
+	//EngineDB.executeSql('SELECT category_GUID, title, model, manufacturer FROM equipment WHERE GUID = ?', [PAGE_EQUIPMENT.equipment_GUID], callbackFunction, [], true);
 }
 
 //	========================================================================================= //
@@ -93,7 +94,8 @@ function page_equipment_close_popup_save() {
 	PAGE_EQUIPMENT.title = PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].controls['cInputEquipmentTitle'].getValue();
 	PAGE_EQUIPMENT.model = PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].controls['cInputEquipmentModel'].getValue();
 	PAGE_EQUIPMENT.manufacturer = PAGE_EQUIPMENT.controls['cPopup'].controls['cPopupPanel'].controls['cPopupGrid'].controls['cInputEquipmentManufacturer'].getValue();
-	EngineDB.addEquipment(PAGE_EQUIPMENT.equipment_GUID, PAGE_EQUIPMENT.category_GUID, PAGE_EQUIPMENT.title, PAGE_EQUIPMENT.model, PAGE_EQUIPMENT.manufacturer);
+	_sqlAddEquipment(PAGE_EQUIPMENT.equipment_GUID, PAGE_EQUIPMENT.category_GUID, PAGE_EQUIPMENT.title, PAGE_EQUIPMENT.model, PAGE_EQUIPMENT.manufacturer);
+	//EngineDB.addEquipment(PAGE_EQUIPMENT.equipment_GUID, PAGE_EQUIPMENT.category_GUID, PAGE_EQUIPMENT.title, PAGE_EQUIPMENT.model, PAGE_EQUIPMENT.manufacturer);
 	PAGE_EQUIPMENT.controls['cPopup'].hide();
 	page_equipment_show();
 }

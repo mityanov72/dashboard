@@ -1,6 +1,19 @@
 var CONST_DB_NAME = 'dashboard';
 var CONST_DB_TYPE = 'LOCALSTORAGE';
 
+var SELECT = 'select';
+var DELETE = 'delete';
+var SELECT_BY_GUID = 'select by GUID';
+var INSERT = 'insert';
+var REPLACE = 'replace';
+var CREATE = 'create';
+var COUNT_FROM_SERVER_TRANSACT = 'select count(1) from server_transact';
+
+var SQL_SELECT_SERVER_TRANSACT_TABLENAME =	'SELECT DISTINCT table_name FROM server_transact';
+var SQL_SELECT_SERVER_TRANSACT =			'SELECT * FROM server_transact WHERE table_name = ? ORDER BY time_update, rowid ASC LIMIT 1';
+var SQL_SELECT_SERVER_TRANSACT_FIRST_GUID =	'SELECT GUID FROM server_transact WHERE table_name = ? ORDER BY time_update, rowid ASC LIMIT 1';
+var SQL_DELETE_TRANSACT =		'DELETE FROM client_transact WHERE GUID = ?';
+
 var CONST_MAX_TABLE_ROW_LIMIT = 20;
 
 var SQL = {};
@@ -15,28 +28,92 @@ function _alasql(sql_string, sql_param, callback_function, callback_params, send
 	}
 }
 
-function initDataBase() {
-	alasql('CREATE '+CONST_DB_TYPE+' DATABASE IF NOT EXISTS '+CONST_DB_NAME+'; '+
-			'ATTACH '+CONST_DB_TYPE+' DATABASE '+CONST_DB_NAME+'; USE '+CONST_DB_NAME);
+function mysql(struct_table, type_query, sql_param, call_function, log_write) {
+	var GUID;
+	log_write = log_write || true;
+	var query_string;
+	switch(type_query) {
+		case(CREATE):
+		query_string = sqlQueryCreate(struct_table);
+		break;
+		case(INSERT):
+		query_string = sqlQueryInsert(struct_table);
+		break;
+		case(REPLACE):
+		query_string = sqlQueryInsert(struct_table);
+		break;
+		case(SELECT):
+		query_string = sqlQuerySelect(struct_table);
+		break;
+		case(DELETE):
+		query_string = sqlQueryDelete(struct_table);
+		break;
+		case(SELECT_BY_GUID):
+		query_string = sqlQuerySelectByGuid(struct_table);
+		break;
+		case(COUNT_FROM_SERVER_TRANSACT):
+		query_string = sqlQueryCountFromServerTransact(struct_table);
+		break;
+		default: return -1;
+	}
+	if(type_query == REPLACE) {
+		for(var i=0; i<struct_table.fields_count; i++) {
+			if(eval('struct_table.field'+i+'.name') == 'GUID') GUID = sql_param[i];
+		}
+		query_string = sqlQuerySelectByGuid(struct_table);
+		alasql(query_string, [GUID], function(result) {
+			if(result == 0) {
+				query_string = sqlQueryInsert(struct_table)
+				alasql(query_string, sql_param, call_function)
+			} else {
+				sql_param.push(GUID);
+				query_string = sqlQueryUpdate(struct_table);
+				alasql(query_string, sql_param, call_function);
+			}
+		});
+	} else {
+		alasql(query_string, sql_param, call_function);
+	}
+}
 
-	sqlCreateTable(SQL.TABLE_USERS);
-	sqlCreateTable(SQL.TABLE_CLIENT_TRANSACT);
-	sqlCreateTable(SQL.TABLE_SERVER_TRANSACT);
-	sqlCreateTable(SQL.TABLE_CUSTOMER);
-	sqlCreateTable(SQL.TABLE_EQUIP_CAT);
-	sqlCreateTable(SQL.TABLE_EQUIPMENT);
-	sqlCreateTable(SQL.TABLE_CUSTOMER_EQUIPMENT);
-	sqlCreateTable(SQL.TABLE_CONTRACT);
-	sqlCreateTable(SQL.TABLE_PERFORMANCE);
+function recreateDataBase(call_function) {
+	localStorage['TIME_UPDATE'] = 0;
+	return alasql('DETACH DATABASE '+CONST_DB_NAME+'; DROP '+CONST_DB_TYPE+' DATABASE '+CONST_DB_NAME, [], initDataBase.bind(null, call_function));
+}
+
+function initDataBase(callback_function) {
+	var callback_table_create = function() {
+		sqlCreateTable(SQL.TABLE_USERS);
+		sqlCreateTable(SQL.TABLE_CLIENT_TRANSACT);
+		sqlCreateTable(SQL.TABLE_SERVER_TRANSACT);
+		sqlCreateTable(SQL.TABLE_CUSTOMER);
+		sqlCreateTable(SQL.TABLE_EQUIP_CAT);
+		sqlCreateTable(SQL.TABLE_EQUIPMENT);
+		sqlCreateTable(SQL.TABLE_CUSTOMER_EQUIPMENT);
+		sqlCreateTable(SQL.TABLE_CONTRACT);
+		sqlCreateTable(SQL.TABLE_PERFORMANCE);
+		run_callback();
+	}
+	var run_callback = function() {
+		var res = alasql('SHOW TABLES FROM '+CONST_DB_NAME);
+		if(res.length < 10) {
+			TASK_MANAGER.addTask(run_callback);
+		} else {
+			if(callback_function) callback_function();
+		}
+	}
+	alasql('CREATE '+CONST_DB_TYPE+' DATABASE IF NOT EXISTS '+CONST_DB_NAME+'; '+
+		'ATTACH '+CONST_DB_TYPE+' DATABASE '+CONST_DB_NAME+'; USE '+CONST_DB_NAME, [], callback_table_create);
 }
 
 function sqlCreateTable(struct_table, callback_function) {
-	var callback = function(result, struct_table) {
+	var callback = function(struct_table, result) {
 		if(result.length == 0) {
-			alasql('CREATE TABLE '+struct_table.table_name+' ('+sqlQueryCreate(struct_table)+')', [], callback_function);
+			var sql_string = 'CREATE TABLE '+struct_table.table_name+' ('+sqlQueryCreate(struct_table)+')';
+			alasql(sql_string, [], callback_function);
 		}
 	}
-	var res = _alasql('SHOW TABLES FROM '+CONST_DB_NAME+' LIKE "'+struct_table.table_name+'"', [], callback, struct_table);
+	var res = alasql('SHOW TABLES FROM '+CONST_DB_NAME+' LIKE "'+struct_table.table_name+'"', [], callback.bind(this, struct_table));
 }
 
 function sqlQueryCreate(struct_table) {
@@ -51,8 +128,8 @@ function sqlQueryCreate(struct_table) {
 	return str;
 }
 
-function sqlQueryReplace(struct_table) {
-	var str = 'REPLACE INTO '+struct_table.table_name+' (';
+function sqlQueryInsert(struct_table) {
+	var str = 'INSERT INTO '+struct_table.table_name+' (';
 	var str_fields = '';
 	var str_values = '';
 	var splitter = ', ';
@@ -67,6 +144,21 @@ function sqlQueryReplace(struct_table) {
 	return str;
 }
 
+function sqlQueryUpdate(struct_table) {
+	var str = 'UPDATE '+struct_table.table_name+' SET ';
+	var str_fields = '';
+	var str_values = '';
+	var splitter = ', ';
+	for(var i = 0; i < struct_table.fields_count; i++) {
+		if(i == struct_table.fields_count-1) {
+			splitter = '';
+		}
+		str_fields = str_fields + eval('struct_table.field'+i+'.name') + ' = ?' + splitter;
+	}
+	str = str + str_fields + ' WHERE GUID = ?';
+	return str;
+}
+
 function sqlQuerySelect(struct_table) {
 	var order = '';
 	if(struct_table.select_order_by !== '') {
@@ -76,12 +168,12 @@ function sqlQuerySelect(struct_table) {
 	return str;
 }
 
+function sqlQueryDelete(struct_table) {
+	return 'DELETE FROM '+struct_table.table_name+' WHERE GUID = ?';
+}
+
 function sqlQuerySelectByGuid(struct_table) {
-	var order = '';
-	if(struct_table.select_order_by !== '') {
-		order = 'ORDER BY '+struct_table.select_order_by;
-	}
-	var str = 'SELECT * FROM '+struct_table.table_name+' '+order+' WHERE GUID = ? LIMIT '+CONST_MAX_TABLE_ROW_LIMIT;
+	var str = 'SELECT * FROM '+struct_table.table_name+' WHERE GUID = ? LIMIT '+CONST_MAX_TABLE_ROW_LIMIT;
 	return str;
 }
 
@@ -403,7 +495,7 @@ SQL.TABLE_EQUIP_CAT = {
 	},
 	"field2": {
 		"name": "GUID",
-		"type": "UUID"
+		"type": "UUID NOT NULL PRIMARY KEY"
 	},
 	"field3": {
 		"name": "title",
@@ -514,4 +606,52 @@ SQL.TABLE_CONTRACT = {
 		"name": "description",
 		"type": "TEXT"
 	}
+}
+
+function getStructTableFromName(table_name) {
+	for(struct_table in SQL) {
+		if(SQL[struct_table].table_name == table_name) {
+			return window.SQL[struct_table];
+		}
+	}
+}
+
+function getQueryParamFromJson(struct_table, JsonResult) {
+	var res_array = [];
+	var field_name;
+	var str;
+	var result = JSON.parse(JsonResult);
+	if(result.num_rows > 0) {
+		for(var i = 0; i < struct_table.fields_count; i++) {
+			field_name = eval('struct_table.field'+i+'.name');
+			str = eval('result.row0.'+field_name);
+			res_array[i] = str;
+		}
+	}
+	return res_array;
+}
+
+function _sqlAddTransactRecord(struct_table, record_GUID, params) {
+	var GUID_tr = guid();
+	mysql(struct_table, REPLACE, params);
+	mysql(SQL.TABLE_CLIENT_TRANSACT, REPLACE, [GUID_tr, struct_table.struct_name, REPLACE, record_GUID]);		//	[GUID_tr, struct_table.struct_name, REPLACE, record_GUID]
+}
+
+function _sqlAddEquipment(GUID, category, title, model, manufacturer) {
+	if(GUID == '') {
+		GUID = guid();
+	}
+	_sqlAddTransactRecord(SQL.TABLE_EQUIPMENT, GUID, [0, 0, GUID, category, title, model, manufacturer]);
+}
+
+function _sqlAddCustomer(GUID, title, town) {
+	GUID = GUID || guid();
+	_sqlAddTransactRecord(SQL.TABLE_CUSTOMER, GUID, [0, 0, GUID, title, '', town]);
+}
+
+function _sqlAddCustomerEquipment(GUID, qr_string, customer_guid, equipment_guid, num_serial, num_invent, date_create) {
+	if(GUID == '') {
+		GUID = guid();
+	}
+	_sqlAddTransactRecord(SQL.TABLE_CUSTOMER_EQUIPMENT, GUID, [0, 0, GUID, qr_string, customer_guid, equipment_guid, num_serial, num_invent, date_create]);
 }

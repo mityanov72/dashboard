@@ -15,7 +15,7 @@ function WebEngine(name) {
 		xhr.open('POST', 'http://'+WEB_SERVER+'/'+site, true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.timeout = 10000;
-		xhr.send(params);
+		if(window.navigator.onLine == true) xhr.send(params);
 		
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState != 4) return;
@@ -38,7 +38,7 @@ function WebEngine(name) {
 		xhr.open('POST', 'http://'+WEB_SERVER+'/'+site, true);
 		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.timeout = 10000;
-		xhr.send(params);
+		if(window.navigator.onLine == true) xhr.send(params);
 		
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState != 4) return;
@@ -47,13 +47,13 @@ function WebEngine(name) {
 				try {
 					callback_function(-1, null, null);
 				} catch(e) {
-					EngineCon.catcher(EngineDB, e);
+					EngineCon.catcher('EngineDB', e);
 				}
 			} else {
 				try {
 					callback_function(0, xhr.responseText, callback_param);
 				} catch(e) {
-					EngineCon.catcher(EngineDB, e);
+					EngineCon.catcher('EngineDB', e);
 				}
 			}
 		}

@@ -124,4 +124,77 @@ var HTML_TABLE_CONTRACT = {
 	}
 }
 
+var HTML_TABLE_CLIENT_TRANSACT = {
+	"column_count": 4,
+	"title_visible": true,
+	"column0": {
+		"name": "GUID",
+		"title": "",
+		"visible": true,
+		"width": "0%",
+		"align": "left"
+	},
+	"column1": {
+		"name": "query_name",
+		"title": "",
+		"visible": true,
+		"width": "100%",
+		"align": "left"
+	},
+	"column2": {
+		"name": "query_type",
+		"title": "ddd",
+		"visible": true,
+		"width": "100%",
+		"align": "left"
+	},
+	"column3": {
+		"name": "record_GUID",
+		"title": "ddd",
+		"visible": true,
+		"width": "100%",
+		"align": "left"
+	}
+}
+
+var HTML_TABLE_SERVER_TRANSACT = {
+	"column_count": 5,
+	"title_visible": true,
+	"column0": {
+		"name": "GUID",
+		"title": "",
+		"visible": true,
+		"width": "0%",
+		"align": "left"
+	},
+	"column1": {
+		"name": "time_update",
+		"title": "",
+		"visible": true,
+		"width": "100%",
+		"align": "left"
+	},
+	"column2": {
+		"name": "table_name",
+		"title": "ddd",
+		"visible": true,
+		"width": "100%",
+		"align": "left"
+	},
+	"column3": {
+		"name": "query_type",
+		"title": "ddd",
+		"visible": true,
+		"width": "100%",
+		"align": "left"
+	},
+	"column4": {
+		"name": "record_GUID",
+		"title": "ddd",
+		"visible": true,
+		"width": "100%",
+		"align": "left"
+	}
+}
+
 

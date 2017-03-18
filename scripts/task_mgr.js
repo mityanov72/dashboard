@@ -1,7 +1,7 @@
-var ULTRA = 0;
-var HIGH = 1;
-var MEDIUM = 2;
-var LOW = 3;
+var ULTRA = 'ULTRA';
+var HIGH = 'HIGH';
+var MEDIUM = 'MEDIUM';
+var LOW = 'LOW';
 
 var CONST_TASK_SWITCH_DELAY_ULTRA = 50;
 var CONST_TASK_SWITCH_DELAY_HIGH = 100;

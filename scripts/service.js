@@ -29,11 +29,12 @@ function SERVICE_SYNC_SERVER() {
 	this.status_push = IDLE;
 	this.status_pull = IDLE;
 	this.START = function() {
-		var callback = function(sender) {
-			if(sender.status_push !== RUN) sender.push(); 
-			if(sender.status_pull !== RUN) sender.pull();
+		var callback = function() {
+			if(DEBUG_PROCESS_SYNC_SERVER) Application.log('SERVICE_SYNC_SERVER.START');
+			if(this.status_push !== RUN) this.push(); 
+			if(this.status_pull !== RUN) this.pull();
 		}
-		setInterval(callback, CONST_TIME_SERVICE_DELAY, this);
+		TASK_MANAGER.addTask(callback.bind(this), LOW);
 	}
 	this.status = function() {
 		if(this.status_pull == RUN || this.status_push == RUN) {
@@ -45,80 +46,74 @@ function SERVICE_SYNC_SERVER() {
 	//==================================================================================================================================================================================//
 	//	push	- отправляет записи из локальной таблицы transact на сервер в таблицу server_transact, после чего удаляет записи из локальной таблицы
 	this.push = function() {
-		var resFunction = function(level, JsonResult, sender) {
+		var resFunction = function(result) {
 			//==================================================================================================================================================================================//
 			//	resSendRecordOnServer - отправляет единичную запись на сервер, в случае успеха удаляет локальную транзакцию
-			function resSendRecordOnServer(level, JsonResult, param) {	//	[callback_param, sender]
-				var callback_param = param[0] || '';
-				var sender = param[1] || '';
-				function getResult(level, answer, [callback_param, sender]) {
+			function resSendRecordOnServer(result, record) {
+				function getResult(level, answer, record_GUID) {
 					if(answer != 'ok') {
-						sender.status_push = IDLE;
+						this.status_push = IDLE;
 						EngineCon.error(null, 'push error while send record on server: ' + answer);
 					} else {
-						sender.status_push = RUN;
-						EngineDB.executeSqlSruct(STRUCT_TABLE_CLIENT_TRANSACT, DELETE, [callback_param], function(level, res, sender) {setTimeout(function() {sender.push();}, CONST_TIME_SERVICE_DELAY_NEXT_PUSH);}, sender, DEBUG_PROCESS_SYNC_SERVER);
+						this.status_push = RUN;
+						mysql(SQL.TABLE_CLIENT_TRANSACT, DELETE, [record_GUID], TASK_MANAGER.addTask.bind(TASK_MANAGER, this.push.bind(this), LOW));
 					}
 				}
-				if(level != 0) {
-					EngineCon.error(null, 'push error');
-					sender.status_push = IDLE;
-					return -1;
-				}
-				sender.status_push = RUN;
-				var source = JsonResult['0'];
-				source['SQL_QUERY_NAME'] = callback_param.query_name;
-				source['SQL_QUERY_TYPE'] = callback_param.query_type;
+				this.status_push = RUN;
+				var source = record['0'];
+				source['SQL_QUERY_NAME'] = result.query_name;
+				source['SQL_QUERY_TYPE'] = result.query_type;
 				source['SQL_QUERY_TABLE'] = '';
-				source['SQL_QUERY_GUID'] = callback_param.GUID;
-				EngineWeb.transmit(WEB_SERVER_SYNC, source, getResult, [source['SQL_QUERY_GUID'], sender]);
+				source['SQL_QUERY_GUID'] = result.GUID;
+				EngineWeb.transmit(WEB_SERVER_SYNC, source, getResult.bind(this), source['SQL_QUERY_GUID']);
 			}
-			if(level != 0) {
-				EngineCon.error(null, 'push error');
-				sender.status_push = IDLE;
-				return -1;
-			}
-			sender.status_push = RUN;
-			if(DEBUG_PROCESS_SYNC_SERVER) Application.log('SERVICE_SYNC_SERVER: record count is '+JsonResult.length);
-			if(JsonResult.length > 0) {
-				EngineDB.executeSqlSruct(eval(JsonResult['0'].query_name), SELECT_BY_GUID, [JsonResult['0'].record_GUID], resSendRecordOnServer, [JsonResult['0'], sender], DEBUG_PROCESS_SYNC_SERVER);
+			this.status_push = RUN;
+			if(DEBUG_PROCESS_SYNC_SERVER) Application.log('SERVICE_SYNC_SERVER: record count in local transact table is '+result.length);
+			if(result.length > 0) {
+				mysql(eval('SQL.'+result['0'].query_name), SELECT_BY_GUID, [result['0'].record_GUID], resSendRecordOnServer.bind(this, result['0']));
 			} else {
-				sender.status_push = IDLE;
+				this.status_push = IDLE;
+				//if(DEBUG_PROCESS_SYNC_SERVER) Application.log('SERVICE_SYNC_SERVER: add delayed task');
+				TASK_MANAGER.addTask(this.push.bind(this), LOW);
 			}
 		};
 		this.status_push = RUN;
-		if(DEBUG_PROCESS_SYNC_SERVER) Application.log('SERVICE_SYNC_SERVER: select count transact record');
-		EngineDB.executeSqlSruct(STRUCT_TABLE_CLIENT_TRANSACT, SELECT, [], resFunction, this, false);	//	DEBUG_PROCESS_SYNC_SERVER
+		//if(DEBUG_PROCESS_SYNC_SERVER) Application.log('SERVICE_SYNC_SERVER: select count transact record');
+		mysql(SQL.TABLE_CLIENT_TRANSACT, SELECT, [], resFunction.bind(this));
 	}
 	//==================================================================================================================================================================================//
 	//	pull - получает данные с сервера и пишет их в локальную базу
 	this.pull = function(query_page) {
-		query_page = query_page || 1;
-		var resFunction = function(level, JsonResult, sender) {
+		query_page = query_page || 0;
+		var resFunction = function(level, server_answer) {
 			if(level != 0) {
 				EngineCon.error(null, 'pull error');
-				sender.status_pull = IDLE;
+				this.status_pull = IDLE;
 				return -1;
 			}
-			sender.status_pull = RUN;
-			var result = JSON.parse(JsonResult);
+			this.status_pull = RUN;
+			var result = JSON.parse(server_answer);
+			if(DEBUG_PROCESS_SYNC_SERVER) Application.log('SERVICE_SYNC_SERVER: record count on server after ['+localStorage['TIME_UPDATE']+'] is: '+result.num_rows);
 			if(result.num_rows == 0) {
-				sender.status_pull = IDLE;
+				this.status_pull = IDLE;
+				TASK_MANAGER.addTask(this.pull.bind(this), LOW);
 				return 0;
 			}
 			var row;
 			for(var i=0; i < result.num_rows; i++) {
 				row = eval('result.row'+i);
-				sender.status_pull = RUN;
-				EngineDB.executeSqlSruct(STRUCT_TABLE_SERVER_TRANSACT, REPLACE, [row.GUID, row.time_update, row.table_name, row.query_type, row.record_GUID], null, [], DEBUG_PROCESS_SYNC_SERVER);
+				this.status_pull = RUN;
+				//EngineDB.executeSqlSruct(STRUCT_TABLE_SERVER_TRANSACT, REPLACE, [row.GUID, row.time_update, row.table_name, row.query_type, row.record_GUID], null, [], DEBUG_PROCESS_SYNC_SERVER);
+				mysql(SQL.TABLE_SERVER_TRANSACT, REPLACE, [row.GUID, row.time_update, row.table_name, row.query_type, row.record_GUID]);
 			}
-			if(result.sql_page < result.sql_page_total) {
-				sender.status_pull = RUN;
-				setTimeout(function() {sender.pull(result.sql_page+1);}, CONST_TIME_PROC_DELAY);
+			if(result.sql_page < (result.sql_page_total - 1)) {
+				this.status_pull = RUN;
+				//setTimeout(function() {sender.pull(result.sql_page+1);}, CONST_TIME_PROC_DELAY);
+				TASK_MANAGER.addTask(this.pull.bind(this, result.sql_page+1));
 				//sender.pull(result.sql_page+1);
 			} else {
 				localStorage['TIME_UPDATE'] = row.time_update;
-				sender.status_pull = IDLE;
+				this.status_pull = IDLE;
 			}
 		};
 		this.status_pull = RUN;
@@ -126,7 +121,7 @@ function SERVICE_SYNC_SERVER() {
 		source['SQL_QUERY_NAME'] = 'SQL_SELECT_SERVER_TRANSACT';
 		source['SQL_TIME_UPDATE'] = localStorage['TIME_UPDATE'];
 		source['SQL_QUERY_PAGE'] = query_page;
-		EngineWeb.transmit(WEB_CLIENT_SYNC, source, resFunction, this);
+		EngineWeb.transmit(WEB_CLIENT_SYNC, source, resFunction.bind(this));
 	}
 }
 
@@ -134,59 +129,49 @@ function SERVICE_SYNC_CLIENT() {
 	SERVICE.call(this, 'SERVICE_SYNC_CLIENT');
 	this.status = IDLE;
 	this.START = function() {
-		var callback = function(sender) {
-			if(sender.status !== RUN) sender.lookTables(); 
+		var callback = function() {
+			if(this.status !== RUN) this.lookTables(); 
 		}
-		setInterval(callback, CONST_TIME_SERVICE_DELAY, this);
+		TASK_MANAGER.addTask(callback.bind(this), LOW, true);
 	}
 	this.syncTable = function(table_name) {
 		this.status = RUN;
-		this.getLocalRecordCount();
+		//this.getLocalRecordCount();
 		this.getLocalFirstRecord(table_name);
 	}
 	//	асинхронная функция, перебирает названия таблиц из server_transact
 	this.lookTables = function() {
-		var callback = function(error_level, ObjResult, sender) {
-			if(error_level < 0) {
-				this.status = IDLE;
-				return -1;
-			}
+		var callback = function(result) {
 			var record_GUID;
 			var table_name_array = [];
-			for(var i=0; i < ObjResult.length; i++) {
-				table_name_array[i] = ObjResult[i].table_name;
+			for(var i=0; i < result.length; i++) {
+				table_name_array[i] = result[i].table_name;
 			}
 			for(var i=0; i < table_name_array.length; i++) {
-				if(sender.is_kill) return -999;
 				var table_name = table_name_array[i];
-				setTimeout(function() {sender.syncTable(table_name);}, CONST_TIME_PROC_DELAY);
+				TASK_MANAGER.addTask(this.syncTable.bind(this, table_name));
+				if(DEBUG_PROCESS_SYNC_CLIENT) Application.log('SERVICE_SYNC_CLIENT: add task to sync table ['+table_name+']');
 			}
 			if(table_name_array.length == 0) this.status = IDLE;
 		}
 		this.status = RUN;
-		EngineDB.executeSql(SQL_SELECT_SERVER_TRANSACT_TABLENAME, [], callback, this, DEBUG_PROCESS_SYNC_CLIENT);
+		alasql(SQL_SELECT_SERVER_TRANSACT_TABLENAME, [], callback.bind(this));
 	}
 	//	getLocalFirstRecord - асинхронная функция, возвращает первую запись из локальной таблицы server_transact по имени таблицы
 	this.getLocalFirstRecord = function(table_name) {
-		var callback = function(error_level, result_array_objects, sender) {
-			if(error_level < 0) {
-				this.status = IDLE;
-				return -1;
-			}
-			try {
-				if(result_array_objects.length > 0) {
-					sender.getServerFirstRecord(table_name, result_array_objects[0].record_GUID, result_array_objects);
-				}
-			} catch(e) {EngineCon.catcher(EngineDB, e);}
-		}
-		EngineDB.executeSql(SQL_SELECT_SERVER_TRANSACT, [table_name], callback, this, DEBUG_PROCESS_SYNC_CLIENT);
+		alasql(SQL_SELECT_SERVER_TRANSACT, [table_name], this.getServerFirstRecord.bind(this, table_name));
 	}
 	//	getServerFirstRecord - асинхронная функция, возвращает одну запись из серверной таблицы по GUID
-	this.getServerFirstRecord = function(table_name, GUID, callback_param) {
+	this.getServerFirstRecord = function(table_name, result) {
+		if(result == undefined || result.length == 0) {
+			if(DEBUG_PROCESS_SYNC_CLIENT) Application.log('SERVICE_SYNC_CLIENT: no more transact record for ['+table_name+']');
+			return 1;
+		}
+		result = result[0];
 		var source = {};
-		source['SQL_QUERY_NAME'] = 'SQL_SELECT_'+table_name.toUpperCase();
-		source['GUID'] = GUID;
-		EngineWeb.transmit(WEB_CLIENT_SYNC, source, this.addRecordFromServer, [this, callback_param]);
+		source['SQL_QUERY_NAME'] = 'SQL_SELECT_'+result.table_name.toUpperCase();
+		source['GUID'] = result.record_GUID;
+		EngineWeb.transmit(WEB_CLIENT_SYNC, source, this.addRecordFromServer.bind(this), result);
 	}
 	//	getLocalRecordCount - НЕ ИСПОЛЬЗУЕТСЯ ПОКА. асинхронная функция, возвращает количество строк в таблице server_transact для указанной таблицы (структуры)
 	this.getLocalRecordCount = function() {
@@ -202,21 +187,19 @@ function SERVICE_SYNC_CLIENT() {
 				EngineCon.catcher(EngineDB, e);
 			}
 		}
-		EngineDB.executeSql(COUNT_FROM_SERVER_TRANSACT, [], callback, this, DEBUG_PROCESS_SYNC_CLIENT);
+		//EngineDB.executeSql(COUNT_FROM_SERVER_TRANSACT, [], callback, this, DEBUG_PROCESS_SYNC_CLIENT);
+		mysql(COUNT_FROM_SERVER_TRANSACT, [], callback, this, DEBUG_PROCESS_SYNC_CLIENT);
 	}
-	this.addRecordFromServer = function(error_level, result_array_objects, [sender, callback_param]) {
-		if(error_level < 0) {
-			this.status = IDLE;
-			return -1;
+	this.addRecordFromServer = function(error_level, result_array_objects, callback_param) {
+
+		var funct_next_record = function(table_name) {
+			TASK_MANAGER.addTask(this.syncTable.bind(this, table_name));
 		}
-		var funct_next_record = function(error_level, empty, [sender, table_name]) {
-			setTimeout(function() {sender.syncTable(table_name);}, CONST_TIME_PROC_DELAY);
+		var funct_del_transact = function(callback_param) {
+			mysql(SQL.TABLE_SERVER_TRANSACT, DELETE, [callback_param.GUID], funct_next_record.bind(this, callback_param.table_name));
 		}
-		var funct_del_transact = function(error_level, empty, [sender, table_name]) {
-			EngineDB.executeSqlSruct(STRUCT_TABLE_SERVER_TRANSACT, DELETE, [callback_param[0].GUID], funct_next_record, [sender, table_name], DEBUG_PROCESS_SYNC_CLIENT);
-		}
-		var struct_table = getStructTableFromName(callback_param[0].table_name);
+		var struct_table = getStructTableFromName(callback_param.table_name);
 		var param = getQueryParamFromJson(struct_table, result_array_objects);
-		EngineDB.executeSqlSruct(struct_table, REPLACE, param, funct_del_transact, [sender, callback_param[0].table_name], DEBUG_PROCESS_SYNC_CLIENT);
+		mysql(struct_table, REPLACE, param, funct_del_transact.bind(this, callback_param));
 	}
 }
