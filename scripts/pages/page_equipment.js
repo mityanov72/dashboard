@@ -4,7 +4,7 @@ var PAGE_EQUIPMENT;
 
 //	========================================================================================= //
 //	Страница регистрируется в приложении
-Application.registryPage('PAGE_EQUIPMENT', 'Equipment list', page_equipment_init, page_equipment_show, page_equipment_clear);
+Application.registryPage('PAGE_EQUIPMENT', 'Каталог оборудования', page_equipment_init, page_equipment_show, page_equipment_clear);
 
 //	========================================================================================= //
 //	Функция для инициализации страницы. Тут строятся все контролы

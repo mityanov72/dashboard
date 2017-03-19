@@ -21,3 +21,111 @@ div.div_popup .div_body {
 	opacity: 1;
 	margin: auto;
 }
+
+.div_back_login {
+	position: absolute;
+	display:  block;
+	background: #EA3B00;
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	z-index: 1000;
+	overflow:  hidden;
+}
+
+center.login {
+	background: #EA3B00;
+	overflow:  hidden;
+}
+
+html {
+	/*overflow:  hidden;*/
+}
+
+a.button_a {
+	display: block;
+	color: #EA3B00;
+	text-decoration: none;
+	user-select: none;
+	text-align: center;
+	background: #fff;
+	padding: 0px;
+	margin: 0px;
+	height: 24px;
+	width: 100%;
+	outline: none;
+	vertical-align: middle;
+}
+a.button_a:hover { 
+	background: #EA3B00;
+	color: #fff;
+	border:1px solid #fff;
+}
+a.button_a:active { background: #fff; }
+
+input.login {
+	width: 100%;
+	border:1px solid #fff;
+}
+table.login {
+	border:0px;
+	width: 260px;
+	margin: 0px;
+	padding: 0px;
+	color: #fff;
+	background: #EA3B00;
+}
+table.login tr {
+	border:0px;
+	margin: 0px;
+	padding: 0px;
+	background: #EA3B00;
+}
+table.login td {
+	border:0px;
+	height: 30px;
+	text-align: right;
+	vertical-align: middle;
+	margin: 0px;
+	padding: 0px;
+	vertical-align: middle;
+	background: #EA3B00;
+}
+p.login {
+	margin-right: 10px;
+	vertical-align: middle;
+	background: #EA3B00;
+	color: #fff;
+}
+div#text_dash {
+	display: block;
+	position: relative;
+    left: 20px;
+    top: 0px;
+	color: #fff;
+	font-size: 60pt;
+	background-color: transparent;
+}
+div#text_light {
+	display: block;
+	position: relative;
+    left: 180px;
+    top: -40px;
+	color: #fff;
+	font-size: 40pt;
+	background-color: transparent;
+}
+div#div_login {
+	position: relative;
+    left: 0px;
+    top: 10px;
+    background: #EA3B00;
+}
+img#logo_eds {
+	display: block;
+	position: fixed;
+    left: 0px;
+    bottom: 0px;
+    background-color: transparent;
+}

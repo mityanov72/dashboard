@@ -83,7 +83,12 @@ function recreateDataBase(call_function) {
 
 function initDataBase(callback_function) {
 	var callback_table_create = function() {
-		sqlCreateTable(SQL.TABLE_USERS);
+		for(table in SQL) {
+			if(SQL[table].table_name !== undefined) {
+				sqlCreateTable(SQL[table]);
+			}
+		}
+		/*sqlCreateTable(SQL.TABLE_USERS);
 		sqlCreateTable(SQL.TABLE_CLIENT_TRANSACT);
 		sqlCreateTable(SQL.TABLE_SERVER_TRANSACT);
 		sqlCreateTable(SQL.TABLE_CUSTOMER);
@@ -92,6 +97,8 @@ function initDataBase(callback_function) {
 		sqlCreateTable(SQL.TABLE_CUSTOMER_EQUIPMENT);
 		sqlCreateTable(SQL.TABLE_CONTRACT);
 		sqlCreateTable(SQL.TABLE_PERFORMANCE);
+		sqlCreateTable(SQL.TABLE_PARTS);
+		sqlCreateTable(SQL.TABLE_PARENT_PARTS);*/
 		run_callback();
 	}
 	var run_callback = function() {
@@ -605,6 +612,112 @@ SQL.TABLE_CONTRACT = {
 	"field4": {
 		"name": "description",
 		"type": "TEXT"
+	}
+}
+
+SQL.TABLE_PARTS = {
+	"table_name": "parts",
+	"fields_count": 11,
+	"select_order_by": "",
+	"struct_name": "TABLE_PARTS",
+	"field0": {
+		"name": "is_delete",
+		"type": "INT"
+	},
+	"field1": {
+		"name": "time_update",
+		"type": "INT"
+	},
+	"field2": {
+		"name": "GUID",
+		"type": "UUID"
+	},
+	"field3": {
+		"name": "title",
+		"type": "TEXT"
+	},
+	"field4": {
+		"name": "model",
+		"type": "TEXT"
+	},
+	"field5": {
+		"name": "manufacturer",
+		"type": "TEXT"
+	},
+	"field6": {
+		"name": "OEM",
+		"type": "TEXT"
+	},
+	"field7": {
+		"name": "shippers",
+		"type": "TEXT"
+	},
+	"field8": {
+		"name": "price",
+		"type": "TEXT"
+	},
+	"field9": {
+		"name": "catalog_number",
+		"type": "TEXT"
+	},
+	"field10": {
+		"name": "description",
+		"type": "TEXT"
+	}
+}
+
+
+SQL.TABLE_PARENT_PARTS = {
+	"table_name": "parent_parts",
+	"fields_count": 5,
+	"select_order_by": "",
+	"struct_name": "TABLE_PARENT_PARTS",
+	"field0": {
+		"name": "is_delete",
+		"type": "INT"
+	},
+	"field1": {
+		"name": "time_update",
+		"type": "INT"
+	},
+	"field2": {
+		"name": "GUID",
+		"type": "UUID"
+	},
+	"field3": {
+		"name": "part_GUID",
+		"type": "UUID"
+	},
+	"field4": {
+		"name": "parent_GUID",
+		"type": "UUID"
+	}
+}
+
+SQL.TABLE_EQUIPMENT_PARTS = {
+	"table_name": "equipment_parts",
+	"fields_count": 5,
+	"select_order_by": "",
+	"struct_name": "TABLE_EQUIPMENT_PARTS",
+	"field0": {
+		"name": "is_delete",
+		"type": "INT"
+	},
+	"field1": {
+		"name": "time_update",
+		"type": "INT"
+	},
+	"field2": {
+		"name": "GUID",
+		"type": "UUID"
+	},
+	"field3": {
+		"name": "part_GUID",
+		"type": "UUID"
+	},
+	"field4": {
+		"name": "euipment_GUID",
+		"type": "UUID"
 	}
 }
 

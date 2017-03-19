@@ -5,17 +5,11 @@ Application.registryPage('PAGE_MAIN', 'Main menu', page_main_init, page_main_sho
 function page_main_init() {
 	PAGE_MAIN.add(Panel, 'cPanel');
 	PAGE_MAIN.controls['cPanel'].add(Grid, 'cGrid');
-	var btnEquipment = PAGE_MAIN.controls['cPanel'].controls['cGrid'].addRow('', Button, 'btnEquipment');
-	btnEquipment.setText('equipment');
-	btnEquipment.setWidth(100);
-	btnEquipment.setClick(function() { Application.open('PAGE_EQUIPMENT') });
-	var btnCustomer = PAGE_MAIN.controls['cPanel'].controls['cGrid'].addRow('', Button, 'btnCustomer');
-	btnCustomer.setText('customer');
-	btnCustomer.setWidth(100);
-	btnCustomer.setClick(function() { Application.open('PAGE_CUSTOMER') });
-	var btnContract = PAGE_MAIN.controls['cPanel'].controls['cGrid'].addRow('', Button, 'btnContract');
-	btnContract.setText('contract');
-	btnContract.setWidth(100);
+	PAGE_MAIN.controls['cPanel'].controls['cGrid'].addRow('', Button, '').init('equipment', Application.open.bind(Application, 'PAGE_EQUIPMENT'), 100);
+	PAGE_MAIN.controls['cPanel'].controls['cGrid'].addRow('', Button, '').init('customer', Application.open.bind(Application, 'PAGE_CUSTOMER'), 100);
+	PAGE_MAIN.controls['cPanel'].controls['cGrid'].addRow('', Button, '').init('contract', alert, 100);
+	PAGE_MAIN.controls['cPanel'].controls['cGrid'].addRow('', Button, '').init('task list', null, 100);
+	PAGE_MAIN.controls['cPanel'].controls['cGrid'].addRow('', Button, '').init('login', Application.open.bind(Application, 'PAGE_LOGIN'), 100);
 
 	var client = PAGE_MAIN.controls['cPanel'].add(Table);
 	client.init(HTML_TABLE_CLIENT_TRANSACT, 'SELECT * FROM client_transact', [], 'SELECT COUNT(1) FROM client_transact', [], 'client_transact',  null);

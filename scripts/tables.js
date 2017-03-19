@@ -197,4 +197,28 @@ var HTML_TABLE_SERVER_TRANSACT = {
 	}
 }
 
-
+var HTML_TABLE_PARTS = {
+	"column_count": 3,
+	"title_visible": true,
+	"column0": {
+		"name": "GUID",
+		"title": "",
+		"visible": false,
+		"width": "0%",
+		"align": "left"
+	},
+	"column1": {
+		"name": "title_model",
+		"title": "",
+		"visible": true,
+		"width": "100%",
+		"align": "left"
+	},
+	"column2": {
+		"name": "manufacturer_catalog_number",
+		"title": "",
+		"visible": true,
+		"width": "100%",
+		"align": "left"
+	}
+}

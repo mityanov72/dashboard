@@ -97,3 +97,11 @@ function MainApp(name) {
 }
 
 var Application = new MainApp();
+
+
+function loadScript(path) {
+	var script = document.createElement('script');
+	script.src = path;
+	script.async = false;
+	document.head.appendChild(script);
+}

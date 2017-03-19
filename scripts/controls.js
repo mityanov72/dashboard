@@ -321,8 +321,8 @@ function Table(name) {
 		for(var i=0; i < this.struct.column_count; i++) {
 			var struct_column = eval('this.struct.column'+i);
 			var value = eval('json_row.'+struct_column.name);
-			if(struct_column.name == 'GUID') {
-				newRow.setAttribute('data-GUID', value);
+			if(struct_column.visible == false) {
+				newRow.setAttribute('data-'+struct_column.name, value);
 				//newCell.style = "display: none";
 			} else {
 				var newCell = newRow.insertCell(-1);
